@@ -1,26 +1,13 @@
-import { Intents, Options, Sweepers } from "discord.js";
+import { Intents, Options } from "discord.js";
 import { PakUstadz } from "./structures/PakUstadz";
 import { CustomError } from "./util/CustomErrror";
 
 const pakUstadz = new PakUstadz({
     makeCache: Options.cacheWithLimits({
         ...Options.defaultMakeCacheSettings,
-        MessageManager: { // Sweep messages every 5 minutes, removing messages that have not been edited or created in the last 3 hours
-            maxSize: Infinity,
-            sweepInterval: 300, // 5 Minutes
-            sweepFilter: Sweepers.filterByLifetime({
-                lifetime: 10800 // 3 Hours
-            })
-        },
-        ThreadManager: { // Sweep threads every 5 minutes, removing threads that have been archived in the last 3 hours
-            maxSize: Infinity,
-            sweepInterval: 300, // 5 Minutes
-            sweepFilter: Sweepers.filterByLifetime({
-                lifetime: 10800, // 3 Hours
-                getComparisonTimestamp: e => e.archiveTimestamp!,
-                excludeFromSweep: e => !e.archived
-            })
-        }
+        // Don't cache these
+        MessageManager: 0,
+        ReactionManager: 0
     }),
     retryLimit: 3,
     intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.DIRECT_MESSAGES]
