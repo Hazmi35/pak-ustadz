@@ -8,7 +8,6 @@ updates:
     timezone: Asia/Jakarta
   open-pull-requests-limit: 99
   target-branch: master
-  reviewers: []
   labels:
   - dependencies
   commit-message:
@@ -22,7 +21,6 @@ updates:
     timezone: Asia/Jakarta
   open-pull-requests-limit: 99
   target-branch: master
-  reviewers: []
   labels:
   - gh-actions
   - dependencies
