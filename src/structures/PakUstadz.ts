@@ -1,0 +1,39 @@
+import "dotenv/config";
+import { Client, Collection } from "discord.js";
+import { createLogger } from "../util/Logger";
+import { CommandsRegistrar } from "../util/CommandsRegistrar";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { BaseCommand } from "./BaseCommand";
+
+
+const currentDirName = dirname(fileURLToPath(import.meta.url));
+export class PakUstadz extends Client {
+    public isProd = process.env.NODE_ENV === "production";
+    public logger = createLogger("client", "id-ID", "shard", undefined, !this.isProd);
+    public commands = new Collection<string, BaseCommand>();
+    private readonly commandsRegistrar = new CommandsRegistrar(this, resolve(currentDirName, "..", "commands"));
+
+    public async build(): Promise<void> {
+        return new Promise(res => {
+            this.on("ready", async () => {
+                await this.commandsRegistrar.build();
+                this.logger.info("Bot sudah ready dan online di Discord!");
+            });
+            this.on("interactionCreate", interaction => {
+                if (!interaction.isCommand()) return undefined;
+
+                if (interaction.channel?.type === "DM") return interaction.reply("Maaf, bot ini hanya bisa digunakan di server / guild saja.");
+
+                const command = this.commands.get(interaction.commandName);
+
+                command!.execute(interaction);
+            });
+            res();
+        });
+    }
+
+    public start(): Promise<string> {
+        return this.login(process.env.DISCORD_TOKEN);
+    }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "pak-ustadz",
+  "version": "0.1.0",
+  "description": "Bot ini dibuat agar kita tidak batal puasa hanya karena tidak sengaja membuka channel nsfw Discord",
+  "license": "MIT",
+  "author": "Hazmi35 <contact@hzmi.xyz>",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npm run lint && npm run compile",
+    "compile": "tsc --build tsconfig.json",
+    "lint": "eslint . --ignore-path .gitignore --ext .ts",
+    "lint:fix": "eslint . --ignore-path .gitignore --ext .ts --fix",
+    "start": "node --experimental-specifier-resolution=node dist/index",
+    "start:dev": "node --no-warnings --experimental-specifier-resolution=node --loader ts-node/esm src/index"
+  },
+  "eslintConfig": {
+    "extends": "@hazmi35/eslint-config/typescript/node",
+    "parserOptions": {
+      "project": "./tsconfig.json"
+    }
+  },
+  "dependencies": {
+    "@discordjs/builders": "^0.12.0",
+    "discord.js": "^13.6.0",
+    "node-fetch": "^3.2.3",
+    "pino": "^7.9.0",
+    "pino-pretty": "^7.5.4"
+  },
+  "devDependencies": {
+    "@hazmi35/eslint-config": "^8.2.1",
+    "@typescript-eslint/eslint-plugin": "^5.15.0",
+    "@typescript-eslint/parser": "^5.15.0",
+    "dotenv": "^16.0.0",
+    "eslint": "^8.11.0",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.2"
+  }
+}
