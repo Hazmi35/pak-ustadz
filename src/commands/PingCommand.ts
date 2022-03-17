@@ -11,7 +11,7 @@ export class PingCommand extends BaseCommand {
     }
 
     public execute(ctx: CommandInteraction): void {
-        ctx.reply("🏓 PING...").then(async () => {
+        ctx.reply({ ephemeral: true, content: "🏓 PING..." }).then(async () => {
             const msg = await ctx.fetchReply();
             const latency = (msg instanceof Message ? msg.createdTimestamp : new Date(msg.timestamp).getTime()) - ctx.createdTimestamp;
             const wsLatency = this.pakUstadz.ws.ping.toFixed(0);
@@ -27,7 +27,7 @@ export class PingCommand extends BaseCommand {
                     value: `**\`${wsLatency}\`** ms`,
                     inline: true
                 })
-                .setFooter({ text: `Requested by: ${ctx.user.tag}`, iconURL: ctx.user.displayAvatarURL({ dynamic: true }) })
+                .setFooter({ text: `Diperintahkan oleh: ${ctx.user.tag}`, iconURL: ctx.user.displayAvatarURL({ dynamic: true }) })
                 .setTimestamp();
 
             ctx.editReply({ content: " ", embeds: [embed] }).catch(e => this.pakUstadz.logger.error(e));
