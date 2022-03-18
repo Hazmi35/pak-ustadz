@@ -7,8 +7,9 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "npm run lint && npm run compile",
+    "build": "npm run prisma:migrate && npm run lint && npm run compile",
     "compile": "tsc --build tsconfig.json",
+    "prisma:migrate": "prisma migrate deploy",
     "lint": "eslint . --ignore-path .gitignore --ext .ts",
     "lint:fix": "eslint . --ignore-path .gitignore --ext .ts --fix",
     "start": "node --experimental-specifier-resolution=node dist/index",
@@ -22,6 +23,7 @@
   },
   "dependencies": {
     "@discordjs/builders": "^0.12.0",
+    "@prisma/client": "^3.11.0",
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.0",
     "node-fetch": "^3.2.3",
@@ -33,6 +35,7 @@
     "@typescript-eslint/eslint-plugin": "^5.15.0",
     "@typescript-eslint/parser": "^5.15.0",
     "eslint": "^8.11.0",
+    "prisma": "^3.11.0",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.2"
   }

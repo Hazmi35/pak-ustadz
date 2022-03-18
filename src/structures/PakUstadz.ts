@@ -5,6 +5,8 @@ import { CommandsRegistrar } from "../util/CommandsRegistrar";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { BaseCommand } from "./BaseCommand";
+import prisma from "@prisma/client"; // @prisma/client is not ESM
+const { PrismaClient } = prisma;
 
 
 const currentDirName = dirname(fileURLToPath(import.meta.url));
@@ -12,12 +14,15 @@ export class PakUstadz extends Client {
     public isProd = process.env.NODE_ENV === "production";
     public logger = createLogger("client", "id-ID", "shard", undefined, !this.isProd);
     public commands = new Collection<string, BaseCommand>();
+    public prisma = new PrismaClient();
+    public userData = this.prisma.user;
     private readonly commandsRegistrar = new CommandsRegistrar(this, resolve(currentDirName, "..", "commands"));
 
     public async build(): Promise<void> {
         return new Promise(res => {
             this.on("ready", async () => {
                 await this.commandsRegistrar.build();
+                await this.prisma.$connect();
                 this.logger.info("Bot sudah ready dan online di Discord!");
             });
             this.on("interactionCreate", interaction => {
