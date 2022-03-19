@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction } from "discord.js";
+import { Interaction } from "discord.js";
 import { PakUstadz } from "./PakUstadz";
 
 export class BaseCommand {
@@ -8,5 +8,5 @@ export class BaseCommand {
     public constructor(public pakUstadz: PakUstadz) {}
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
-    public execute(ctx: CommandInteraction): any {}
+    public execute(ctx: Interaction): any {}
 }

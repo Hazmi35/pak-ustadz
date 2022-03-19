@@ -5,6 +5,7 @@ import { CommandsRegistrar } from "../util/CommandsRegistrar";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { BaseCommand } from "./BaseCommand";
+import { readdirSync } from "node:fs";
 import prisma from "@prisma/client"; // @prisma/client is not ESM
 const { PrismaClient } = prisma;
 
@@ -16,6 +17,7 @@ export class PakUstadz extends Client {
     public commands = new Collection<string, BaseCommand>();
     public prisma = new PrismaClient();
     public userData = this.prisma.user;
+    public imsakiyah = readdirSync(resolve(currentDirName, "..", "imsakiyah"));
     private readonly commandsRegistrar = new CommandsRegistrar(this, resolve(currentDirName, "..", "commands"));
 
     public async build(): Promise<void> {
@@ -26,9 +28,9 @@ export class PakUstadz extends Client {
                 this.logger.info("Bot sudah ready dan online di Discord!");
             });
             this.on("interactionCreate", interaction => {
-                if (!interaction.isCommand()) return undefined;
+                if (!interaction.isCommand() && !interaction.isAutocomplete()) return undefined;
 
-                if (interaction.channel?.type === "DM") return interaction.reply("Maaf, bot ini hanya bisa digunakan di server / guild saja.");
+                if (interaction.isCommand() && interaction.channel?.type === "DM") return interaction.reply("Maaf, bot ini hanya bisa digunakan di server / guild saja.");
 
                 const command = this.commands.get(interaction.commandName);
 
