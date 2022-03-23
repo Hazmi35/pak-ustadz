@@ -7,7 +7,7 @@ export class PingCommand extends BaseCommand {
         super(pakUstadz);
         this.meta
             .setName("ping")
-            .setDescription("Shows the current ping of the bot");
+            .setDescription("Tampilkan ping bot dalam milisekon!");
     }
 
     public execute(ctx: CommandInteraction): void {
