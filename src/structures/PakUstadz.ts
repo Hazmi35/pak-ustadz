@@ -17,6 +17,7 @@ export class PakUstadz extends Client {
     public commands = new Collection<string, BaseCommand>();
     public prisma = new PrismaClient();
     public userData = this.prisma.user;
+    public serverData = this.prisma.server;
     public imsakiyah = readdirSync(resolve(currentDirName, "..", "imsakiyah"));
     private readonly commandsRegistrar = new CommandsRegistrar(this, resolve(currentDirName, "..", "commands"));
 

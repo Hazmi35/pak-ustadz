@@ -15,3 +15,9 @@ model User {
     userId String
     daerah String
 }
+
+model Server {
+  id Int @id @default(autoincrement())
+  serverId String
+  enabled Boolean
+}
