@@ -28,7 +28,7 @@
     "dotenv": "^16.0.0",
     "node-fetch": "^3.2.3",
     "pino": "^7.9.2",
-    "pino-pretty": "^7.5.4"
+    "pino-pretty": "^7.6.0"
   },
   "devDependencies": {
     "@hazmi35/eslint-config": "^8.2.1",
