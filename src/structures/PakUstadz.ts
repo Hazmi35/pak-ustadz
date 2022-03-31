@@ -37,6 +37,7 @@ export class PakUstadz extends Client {
 
                 command!.execute(interaction);
             });
+            this.on("debug", m => this.logger.debug(m));
             res();
         });
     }
