@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import { EventEmitter } from "node:events";
 import { Collection } from "discord.js";
 
-export class ImsakiyahHandler extends EventEmitter {
+export class ImsakiyahClock extends EventEmitter {
     private isInitialized = false;
     private readonly fasts: Collection<string, boolean> = new Collection();
     public constructor(public pakUstadz: PakUstadz, private readonly imsakiyahPath: string) { super(); }

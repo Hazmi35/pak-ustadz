@@ -6,7 +6,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { BaseCommand } from "./BaseCommand";
 import prisma from "@prisma/client"; // @prisma/client is not ESM
-import { Imsakiyah, ImsakiyahHandler } from "../util/ImsakiyahHandler";
+import { Imsakiyah, ImsakiyahClock } from "../util/ImsakiyahClock";
 const { PrismaClient } = prisma;
 
 
@@ -19,7 +19,7 @@ export class PakUstadz extends Client {
     public userData = this.prisma.user;
     public serverData = this.prisma.server;
     public imsakiyah: Collection<string, Imsakiyah[]> = new Collection();
-    private readonly imsakiyahHandler = new ImsakiyahHandler(this, resolve(currentDirName, "..", "imsakiyah"));
+    private readonly imsakiyahClock = new ImsakiyahClock(this, resolve(currentDirName, "..", "imsakiyah"));
     private readonly commandsRegistrar = new CommandsRegistrar(this, resolve(currentDirName, "..", "commands"));
 
     public async build(): Promise<void> {
@@ -28,7 +28,7 @@ export class PakUstadz extends Client {
                 await this.commandsRegistrar.build();
                 await this.prisma.$connect();
                 this.logger.info("Bot sudah ready dan online di Discord!");
-                await this.imsakiyahHandler.init();
+                await this.imsakiyahClock.init();
             });
             this.on("interactionCreate", interaction => {
                 if (!interaction.isCommand() && !interaction.isAutocomplete()) return undefined;
