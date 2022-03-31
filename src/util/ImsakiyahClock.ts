@@ -2,11 +2,9 @@ import { PakUstadz } from "../structures/PakUstadz";
 import { readdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { EventEmitter } from "node:events";
-import { Collection } from "discord.js";
 
 export class ImsakiyahClock extends EventEmitter {
     private isInitialized = false;
-    private readonly fasts: Collection<string, boolean> = new Collection();
     public constructor(public pakUstadz: PakUstadz, private readonly imsakiyahPath: string) { super(); }
 
     public async init(): Promise<void> {
@@ -28,13 +26,13 @@ export class ImsakiyahClock extends EventEmitter {
 
             if (today === undefined) continue;
 
-            if (now >= today.imsak && now < today.maghrib && this.fasts.get(k) !== true) {
-                this.fasts.set(k, true);
+            if (now >= today.imsak && now < today.maghrib && this.pakUstadz.fastings.get(k) !== true) {
+                this.pakUstadz.fastings.set(k, true);
                 this.emit("imsak", k);
             }
 
-            if (now >= today.maghrib && this.fasts.get(k) !== false) {
-                this.fasts.set(k, false);
+            if (now >= today.maghrib && this.pakUstadz.fastings.get(k) !== false) {
+                this.pakUstadz.fastings.set(k, false);
                 this.emit("iftar", k);
             }
         }

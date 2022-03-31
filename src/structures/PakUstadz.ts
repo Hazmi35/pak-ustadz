@@ -18,7 +18,8 @@ export class PakUstadz extends Client {
     public prisma = new PrismaClient();
     public userData = this.prisma.user;
     public serverData = this.prisma.server;
-    public imsakiyah: Collection<string, Imsakiyah[]> = new Collection();
+    public readonly imsakiyah: Collection<string, Imsakiyah[]> = new Collection();
+    public readonly fastings: Collection<string, boolean> = new Collection();
     private readonly imsakiyahClock = new ImsakiyahClock(this, resolve(currentDirName, "..", "imsakiyah"));
     private readonly commandsRegistrar = new CommandsRegistrar(this, resolve(currentDirName, "..", "commands"));
 
