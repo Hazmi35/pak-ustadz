@@ -36,8 +36,7 @@ export class DaftarCommand extends BaseCommand {
     }
 
     private generateOptions(): ApplicationCommandOptionChoice[] {
-        return this.pakUstadz.imsakiyah
-            .map(i => i.replace(".json", ""))
+        return Array.from(this.pakUstadz.imsakiyah.keys())
             .map(i => ({ name: i.split("-").map(n => `${n.charAt(0).toUpperCase()}${n.slice(1)}`).join(" "), value: i }));
     }
 }
