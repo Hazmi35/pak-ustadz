@@ -1,11 +1,11 @@
 import "dotenv/config";
-import { Client, Collection } from "discord.js";
+import { Client, Collection, Guild } from "discord.js";
 import { createLogger } from "../util/Logger";
 import { CommandsRegistrar } from "../util/CommandsRegistrar";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { BaseCommand } from "./BaseCommand";
-import prisma from "@prisma/client"; // @prisma/client is not ESM
+import prisma, { Server } from "@prisma/client"; // @prisma/client is not ESM
 import { Imsakiyah, ImsakiyahClock } from "../util/ImsakiyahClock";
 import { NSFWLocker } from "../util/NSFWLocker";
 const { PrismaClient } = prisma;
@@ -29,9 +29,11 @@ export class PakUstadz extends Client {
         this.on("ready", async () => {
             await this.commandsRegistrar.build();
             await this.prisma.$connect();
-            this.logger.info("Bot sudah ready dan online di Discord!");
             await this.imsakiyahClock.init();
-            this.guilds.cache.forEach(g => this.nsfwLocker.action(g));
+            this.logger.info("Bot sudah ready dan online di Discord!");
+            const deletedGuilds = await this.deleteKickedGuilds();
+            if (deletedGuilds.length > 0) this.logger.info(deletedGuilds, "Saya telah dikeluarkan dari guild-guild dibawah ini, data akan dihapus: ...");
+            await this.doActionOnEnabledGuilds();
         });
         this.on("interactionCreate", interaction => {
             if (!interaction.isCommand() && !interaction.isAutocomplete()) return undefined;
@@ -42,13 +44,35 @@ export class PakUstadz extends Client {
 
             command!.execute(interaction);
         });
+        this.on("guildDelete", async g => {
+            const guild = await this.serverData.findFirst({ where: { serverId: g.id } });
+            if (!guild) return;
+            await this.serverData.delete({ where: { id: guild.id } });
+            this.logger.info(`Saya telah dikeluarkan dari guild: ${g.name}, data untuk server tersebut terhapus.`);
+        });
         this.on("debug", m => this.logger.debug(m));
 
-        this.imsakiyahClock.on("imsak", (daerah: string) => this.guilds.cache.forEach(g => this.nsfwLocker.action(g, daerah, true)));
-        this.imsakiyahClock.on("iftar", (daerah: string) => this.guilds.cache.forEach(g => this.nsfwLocker.action(g, daerah, false)));
+        this.imsakiyahClock.on("imsak", (daerah: string) => this.doActionOnEnabledGuilds(daerah, true));
+        this.imsakiyahClock.on("iftar", (daerah: string) => this.doActionOnEnabledGuilds(daerah, false));
     }
 
     public start(): Promise<string> {
         return this.login(process.env.DISCORD_TOKEN);
+    }
+
+    private async doActionOnEnabledGuilds(daerah?: string, lock?: boolean): Promise<void> {
+        for (const g of await this.getEnabledGuilds()) { await this.nsfwLocker.action(g, daerah, lock); }
+    }
+
+    private async getEnabledGuilds(): Promise<Guild[]> {
+        const enabledGuilds = await this.serverData.findMany({ select: { serverId: true }, where: { enabled: true } });
+        return enabledGuilds.map<Guild | null>(g => this.guilds.resolve(g.serverId)!).filter(g => g !== null) as Guild[];
+    }
+
+    private async deleteKickedGuilds(): Promise<Server[]> {
+        const guilds = await this.getEnabledGuilds();
+        const deletedGuilds = await this.serverData.findMany({ where: { serverId: { notIn: guilds.map(g => g.id) } } });
+        await this.serverData.deleteMany({ where: { id: { in: deletedGuilds.map(d => d.id) } } });
+        return deletedGuilds;
     }
 }
