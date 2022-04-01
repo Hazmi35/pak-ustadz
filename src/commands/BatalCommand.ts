@@ -2,7 +2,7 @@ import { CommandInteraction } from "discord.js";
 import { BaseCommand } from "../structures/BaseCommand";
 import { PakUstadz } from "../structures/PakUstadz";
 
-export class KonfigCommand extends BaseCommand {
+export class BatalCommand extends BaseCommand {
     public constructor(public pakUstadz: PakUstadz) {
         super(pakUstadz);
         this.meta
