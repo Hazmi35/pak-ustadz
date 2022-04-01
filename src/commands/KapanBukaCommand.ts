@@ -38,7 +38,7 @@ export class KapanBukaCommand extends BaseCommand {
 
         if (!today) return ctx.reply({ ephemeral: true, content: "Hari ini bukan Puasa Ramadhan." });
 
-        return ctx.reply(`Maghrib di daerah \`${namaDaerah}\` adalah: <t:${today.maghrib.getTime() / 1000}:R> (<t:${today.maghrib.getTime() / 1000}:t>)`);
+        return ctx.reply(`Maghrib di daerah \`${namaDaerah}\` adalah: <t:${Math.floor(today.maghrib.getTime() / 1000)}:R> (<t:${Math.floor(today.maghrib.getTime() / 1000)}:t>)`);
     }
 
     private generateOptions(): ApplicationCommandOptionChoice[] {
