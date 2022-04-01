@@ -9,7 +9,8 @@
   "scripts": {
     "build": "npm run prisma:migrate && npm run lint && npm run compile",
     "compile": "tsc --build tsconfig.json",
-    "prisma:migrate": "prisma migrate deploy",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "npm run prisma:generate && prisma migrate deploy",
     "lint": "eslint . --ignore-path .gitignore --ext .ts",
     "lint:fix": "eslint . --ignore-path .gitignore --ext .ts --fix",
     "start": "node --experimental-specifier-resolution=node dist/index",

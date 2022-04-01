@@ -29,6 +29,9 @@ COPY --from=build-stage /tmp/build/package.json .
 COPY --from=build-stage /tmp/build/package-lock.json .
 COPY --from=build-stage /tmp/build/node_modules ./node_modules
 COPY --from=build-stage /tmp/build/dist ./dist
+COPY --from=build-stage /tmp/build/prisma ./prisma
+COPY --from=build-stage /tmp/build/data ./data
+COPY --from=build-stage /tmp/build/LICENSE .
 
 # Mark logs folder and data folder as Docker volume
 VOLUME [ "/app/logs", "/app/data" ]

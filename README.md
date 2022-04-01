@@ -21,7 +21,7 @@ Sisanya, bot akan mengurus channel channel yang ditandai sebagai channel NSFW / 
 
     1.3 Nyalakan bot
     ```sh
-    $ docker run --name PakUstadz --env-file .env --volume $PWD/pak-ustadz-data:/app/data --volume $PWD/pak-ustadz-logs:/app/logs hazmi35/pak-ustadz:latest
+    $ docker run --name PakUstadz --detach --env-file .env --volume $PWD/pak-ustadz-data:/app/data --volume $PWD/pak-ustadz-logs:/app/logs hazmi35/pak-ustadz:latest
     ```
     1.4 Kamu juga bisa menggunakan docker-compose untuk ini, dan perlu diingat untuk menambahkan docker volume untuk data SQLite.
 2. Jika kamu tidak menggunakan Docker, lakukan ini:
