@@ -27,11 +27,13 @@ export class DaftarCommand extends BaseCommand {
         const daerah = this.generateOptions().find(i => i.value === ctx.options.getString("daerah")!)!;
 
         if (currentData !== null) {
-            await this.pakUstadz.userData.update({ where: { id: currentData.id }, data: { daerah: daerah.value as string } });
+            const data = await this.pakUstadz.userData.update({ where: { id: currentData.id }, data: { daerah: daerah.value as string } });
+            await this.pakUstadz.nsfwLocker.action(ctx.guild!, { daerah: data.daerah, userId: data.userId });
             return ctx.reply(`Kamu sudah mendaftarkan ulang dirimu dengan daerah: ${daerah.name}`);
         }
 
-        await this.pakUstadz.userData.create({ data: { userId: ctx.user.id, daerah: daerah.value as string } });
+        const data = await this.pakUstadz.userData.create({ data: { userId: ctx.user.id, daerah: daerah.value as string } });
+        await this.pakUstadz.nsfwLocker.action(ctx.guild!, { daerah: data.daerah, userId: data.userId });
         return ctx.reply(`Kamu sudah mendaftarkan dirimu dengan daerah: ${daerah.name}`);
     }
 

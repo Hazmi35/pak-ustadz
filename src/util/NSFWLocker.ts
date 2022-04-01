@@ -1,13 +1,16 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { DiscordAPIError, Guild, GuildMember, NonThreadGuildBasedChannel, TextChannel } from "discord.js";
+import { DiscordAPIError, Guild, GuildMember, NonThreadGuildBasedChannel, Snowflake, TextChannel } from "discord.js";
 import { PakUstadz } from "../structures/PakUstadz";
+
+export interface Options { daerah?: string; lock?: boolean; userId?: Snowflake }
 
 export class NSFWLocker {
     public constructor(public pakUstadz: PakUstadz) {}
 
-    public async action(guild: Guild, daerah?: string, lock?: boolean): Promise<void> {
+    public async action(guild: Guild, options: Options): Promise<void> {
+        const { daerah, userId, lock } = options;
         const channels = guild.channels.cache.filter(c => c.type === "GUILD_TEXT" && c.nsfw);
-        const enabledMembers = await this.pakUstadz.userData.findMany({ select: { userId: true, daerah: true }, where: { daerah } });
+        const enabledMembers = await this.pakUstadz.userData.findMany({ select: { userId: true, daerah: true }, where: { daerah, userId } });
         const members = await guild.members.fetch({ user: enabledMembers.map(e => e.userId) });
         for (const [, c] of channels) {
             const ch = await c.fetch(false) as TextChannel;
