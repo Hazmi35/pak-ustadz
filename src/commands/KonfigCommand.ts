@@ -20,8 +20,10 @@ export class KonfigCommand extends BaseCommand {
             return ctx.reply({ ephemeral: true, content: `Kamu harus punya permission: ${missing.map(p => `\`${p}\``).join(", ")} untuk menjalankan perintah ini!` });
         }
 
-        if (!ctx.guild?.members.resolve(ctx.client.user!.id)!.permissions.has(["MANAGE_CHANNELS", "MANAGE_ROLES"])) {
-            const missing = ctx.memberPermissions!.missing(["MANAGE_CHANNELS", "MANAGE_ROLES"]);
+        const botPermissions = ctx.guild!.members.resolve(ctx.client.user!.id)!.permissions;
+
+        if (!botPermissions.has(["MANAGE_CHANNELS", "MANAGE_ROLES"])) {
+            const missing = botPermissions.missing(["MANAGE_CHANNELS", "MANAGE_ROLES"]);
             return ctx.reply({ ephemeral: true, content: `Saya tidak punya permission: ${missing.map(p => `\`${p}\``).join(", ")} untuk melakukan tugas saya!` });
         }
 
@@ -33,7 +35,7 @@ export class KonfigCommand extends BaseCommand {
         const enabled = ctx.options.getBoolean("boolean")!;
 
         await this.pakUstadz.serverData.update({ where: { id: currentData.id }, data: { enabled } });
-        if (enabled) await this.pakUstadz.nsfwLocker.action(ctx.guild, {});
+        if (enabled) await this.pakUstadz.nsfwLocker.action(ctx.guild!, {});
         await ctx.reply(`Berhasil ${enabled ? "menyalakan" : "mematikan"} bot di server ini!`);
     }
 }
