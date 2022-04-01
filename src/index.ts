@@ -3,6 +3,14 @@ import { Intents, Options } from "discord.js";
 import { PakUstadz } from "./structures/PakUstadz";
 import { CustomError } from "./util/CustomErrror";
 
+// TODO:
+/*
+ * Gunakan sesuatu yang bisa membaca timezone! (Seperti date-fns)
+ * Untuk saat ini, kita memaksa Node.js untuk menggunakan timezone Asia/Jakarta
+ */
+
+process.env.TZ = "Asia/Jakarta";
+
 const pakUstadz = new PakUstadz({
     makeCache: Options.cacheWithLimits({
         ...Options.defaultMakeCacheSettings,
