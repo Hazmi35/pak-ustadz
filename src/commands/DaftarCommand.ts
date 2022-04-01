@@ -33,7 +33,8 @@ export class DaftarCommand extends BaseCommand {
         }
 
         const data = await this.pakUstadz.userData.create({ data: { userId: ctx.user.id, daerah: daerah.value as string } });
-        await this.pakUstadz.nsfwLocker.action(ctx.guild!, { daerah: data.daerah, userId: data.userId });
+        const { enabled: isEnabled } = await this.pakUstadz.serverData.findFirst({ select: { enabled: true }, where: { serverId: ctx.guildId! } }) ?? { enabled: false };
+        if (isEnabled) await this.pakUstadz.nsfwLocker.action(ctx.guild!, { daerah: data.daerah, userId: data.userId });
         return ctx.reply({ ephemeral: true, content: `Kamu sudah mendaftarkan dirimu dengan daerah: ${daerah.name}` });
     }
 
