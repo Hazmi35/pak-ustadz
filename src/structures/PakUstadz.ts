@@ -14,7 +14,7 @@ const { PrismaClient } = prisma;
 const currentDirName = dirname(fileURLToPath(import.meta.url));
 export class PakUstadz extends Client {
     public isProd = process.env.NODE_ENV === "production";
-    public logger = createLogger("client", "id-ID", "shard", undefined, !this.isProd);
+    public logger = createLogger("client", "id-ID", "shard", this.shard?.ids[0], !this.isProd);
     public commands = new Collection<string, BaseCommand>();
     public prisma = new PrismaClient();
     public userData = this.prisma.user;
