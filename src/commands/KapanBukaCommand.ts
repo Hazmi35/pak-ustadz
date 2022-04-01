@@ -25,11 +25,12 @@ export class KapanBukaCommand extends BaseCommand {
         const currentData = await this.pakUstadz.userData.findFirst({ where: { userId: ctx.user.id } });
         const daerah = ctx.options.getString("daerah");
         const daerahTujuan = currentData?.daerah ?? daerah;
-        const namaDaerah = this.generateOptions().find(i => i.value === daerahTujuan)!.name;
 
         if (daerahTujuan === null) {
             return ctx.reply({ ephemeral: true, content: "Sepertinya kamu belum mendaftarkan daerah mu kedalam database bot dan tidak menyebutkan daerah di command ini" });
         }
+
+        const namaDaerah = this.generateOptions().find(i => i.value === daerahTujuan)!.name;
 
         this.pakUstadz.imsakiyah.get(daerahTujuan);
         const now = new Date(Date.now());
