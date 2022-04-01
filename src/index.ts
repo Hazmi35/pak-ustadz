@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { Intents, Options } from "discord.js";
 import { PakUstadz } from "./structures/PakUstadz";
 import { CustomError } from "./util/CustomErrror";
@@ -10,6 +11,7 @@ const pakUstadz = new PakUstadz({
         ReactionManager: 0
     }),
     retryLimit: 3,
+    shardCount: Number(process.env.SHARD_COUNT ?? 0),
     intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS]
 });
 
