@@ -29,12 +29,12 @@ export class DaftarCommand extends BaseCommand {
         if (currentData !== null) {
             const data = await this.pakUstadz.userData.update({ where: { id: currentData.id }, data: { daerah: daerah.value as string } });
             await this.pakUstadz.nsfwLocker.action(ctx.guild!, { daerah: data.daerah, userId: data.userId });
-            return ctx.reply(`Kamu sudah mendaftarkan ulang dirimu dengan daerah: ${daerah.name}`);
+            return ctx.reply({ ephemeral: true, content: `Kamu sudah mendaftarkan ulang dirimu dengan daerah: ${daerah.name}` });
         }
 
         const data = await this.pakUstadz.userData.create({ data: { userId: ctx.user.id, daerah: daerah.value as string } });
         await this.pakUstadz.nsfwLocker.action(ctx.guild!, { daerah: data.daerah, userId: data.userId });
-        return ctx.reply(`Kamu sudah mendaftarkan dirimu dengan daerah: ${daerah.name}`);
+        return ctx.reply({ ephemeral: true, content: `Kamu sudah mendaftarkan dirimu dengan daerah: ${daerah.name}` });
     }
 
     private generateOptions(): ApplicationCommandOptionChoice[] {

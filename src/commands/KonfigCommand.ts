@@ -17,12 +17,12 @@ export class KonfigCommand extends BaseCommand {
     public async execute(ctx: CommandInteraction): Promise<void> {
         if (!ctx.memberPermissions!.has(["MANAGE_CHANNELS", "MANAGE_ROLES"])) {
             const missing = ctx.memberPermissions!.missing(["MANAGE_CHANNELS", "MANAGE_ROLES"]);
-            return ctx.reply(`Kamu harus punya permission: ${missing.map(p => `\`${p}\``).join(", ")} untuk menjalankan perintah ini!`);
+            return ctx.reply({ ephemeral: true, content: `Kamu harus punya permission: ${missing.map(p => `\`${p}\``).join(", ")} untuk menjalankan perintah ini!` });
         }
 
         if (!ctx.guild?.members.resolve(ctx.client.user!.id)!.permissions.has(["MANAGE_CHANNELS", "MANAGE_ROLES"])) {
             const missing = ctx.memberPermissions!.missing(["MANAGE_CHANNELS", "MANAGE_ROLES"]);
-            return ctx.reply(`Saya tidak punya permission: ${missing.map(p => `\`${p}\``).join(", ")} untuk melakukan tugas saya!`);
+            return ctx.reply({ ephemeral: true, content: `Saya tidak punya permission: ${missing.map(p => `\`${p}\``).join(", ")} untuk melakukan tugas saya!` });
         }
 
         let currentData = await this.pakUstadz.serverData.findFirst({ where: { serverId: ctx.guildId! } });
