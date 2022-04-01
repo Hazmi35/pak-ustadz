@@ -42,6 +42,10 @@ export class PakUstadz extends Client {
             const deletedGuilds = await this.deleteKickedGuilds();
             if (deletedGuilds.length > 0) this.logger.info(deletedGuilds, "Saya telah dikeluarkan dari guild-guild dibawah ini, datanya akan dihapus:");
             await this.doActionOnEnabledGuilds({});
+
+            // If Imsak and Iftar event from imsakiyahClock is emitted, then do the actions.
+            this.imsakiyahClock.on("imsak", (daerah: string) => this.doActionOnEnabledGuilds({ daerah, lock: true }));
+            this.imsakiyahClock.on("iftar", (daerah: string) => this.doActionOnEnabledGuilds({ daerah, lock: false }));
         });
 
         this.on("interactionCreate", interaction => {
@@ -64,10 +68,6 @@ export class PakUstadz extends Client {
         });
 
         this.on("debug", m => this.logger.debug(m));
-
-        // If Imsak and Iftar event from imsakiyahClock is emitted, then do the actions.
-        this.imsakiyahClock.on("imsak", (daerah: string) => this.doActionOnEnabledGuilds({ daerah, lock: true }));
-        this.imsakiyahClock.on("iftar", (daerah: string) => this.doActionOnEnabledGuilds({ daerah, lock: false }));
     }
 
     public start(): Promise<string> {
