@@ -17,5 +17,5 @@
 		"typeRoots": ["node_modules/@types", "src/typings"]
 	},
 	"exclude": [],
-	"include": ["src/**/*"]
+	"include": ["src/**/*", "src/imsakiyah/*.json"]
 }
