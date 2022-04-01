@@ -48,10 +48,12 @@ export class PakUstadz extends Client {
             this.imsakiyahClock.on("imsak", async (daerah: string) => {
                 this.failed.clear();
                 await this.doActionOnEnabledGuilds({ daerah, lock: true });
+                this.logger.info(`${daerah.split("-").map(n => `${n.charAt(0).toUpperCase()}${n.slice(1)}`).join(" ")} Baru saja imsak.`);
             });
             this.imsakiyahClock.on("iftar", async (daerah: string) => {
                 this.failed.clear();
                 await this.doActionOnEnabledGuilds({ daerah, lock: false });
+                this.logger.info(`${daerah.split("-").map(n => `${n.charAt(0).toUpperCase()}${n.slice(1)}`).join(" ")} Sudah berbuka puasa.`);
             });
         });
 
