@@ -67,6 +67,12 @@ export class PakUstadz extends Client {
             this.logger.info(`Saya telah dikeluarkan dari guild: ${g.name}, data untuk server tersebut terhapus.`);
         });
 
+        this.on("warn", message => this.logger.warn(message));
+
+        this.on("error", error => this.logger.error(error, "CLIENT_ERROR:"));
+
+        this.on("rateLimit", ratelimitData => this.logger.warn(ratelimitData, "Bot mendapatkan ratelimit:"));
+
         this.on("debug", m => this.logger.debug(m));
     }
 
