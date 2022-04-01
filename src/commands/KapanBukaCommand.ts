@@ -28,14 +28,14 @@ export class KapanBukaCommand extends BaseCommand {
         const namaDaerah = this.generateOptions().find(i => i.value === daerahTujuan)!.name;
 
         if (daerahTujuan === null) {
-            return ctx.reply("Sepertinya kamu belum mendaftarkan daerah mu kedalam database bot dan tidak menyebutkan daerah di command ini");
+            return ctx.reply({ ephemeral: true, content: "Sepertinya kamu belum mendaftarkan daerah mu kedalam database bot dan tidak menyebutkan daerah di command ini" });
         }
 
         this.pakUstadz.imsakiyah.get(daerahTujuan);
         const now = new Date(Date.now());
         const today = this.pakUstadz.imsakiyah.get(daerahTujuan)!.find(i2 => i2.bulan === now.getMonth() && i2.tanggal === now.getDate());
 
-        if (!today) return ctx.reply("Hari ini bukan Puasa Ramadhan.");
+        if (!today) return ctx.reply({ ephemeral: true, content: "Hari ini bukan Puasa Ramadhan." });
 
         return ctx.reply(`Maghrib di daerah \`${namaDaerah}\` adalah: <t:${today.maghrib.getTime() / 1000}:R> (<t:${today.maghrib.getTime() / 1000}:t>)`);
     }
