@@ -25,6 +25,6 @@ process.on("uncaughtException", e => {
     process.exit(1);
 });
 
-await pakUstadz.build();
+pakUstadz.build();
 
 await pakUstadz.start();
