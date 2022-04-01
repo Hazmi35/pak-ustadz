@@ -27,7 +27,7 @@ export class KapanBukaCommand extends BaseCommand {
         const daerahTujuan = daerah ?? currentData?.daerah;
 
         if (daerahTujuan === undefined) {
-            return ctx.reply({ ephemeral: true, content: "Sepertinya kamu belum mendaftarkan daerah mu kedalam database bot dan tidak menyebutkan daerah di command ini" });
+            return ctx.reply({ ephemeral: true, content: "Sepertinya kamu belum daftar dan tidak menyebutkan daerah di command ini" });
         }
 
         const namaDaerah = this.generateOptions().find(i => i.value === daerahTujuan)!.name;
