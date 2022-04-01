@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { BaseCommand } from "./BaseCommand";
 import prisma, { Server } from "@prisma/client"; // @prisma/client is not ESM
 import { Imsakiyah, ImsakiyahClock } from "../util/ImsakiyahClock";
-import { NSFWLocker } from "../util/NSFWLocker";
+import { NSFWLocker, Options } from "../util/NSFWLocker";
 const { PrismaClient } = prisma;
 
 
@@ -21,8 +21,8 @@ export class PakUstadz extends Client {
     public serverData = this.prisma.server;
     public readonly imsakiyah: Collection<string, Imsakiyah[]> = new Collection();
     public readonly fastings: Collection<string, boolean> = new Collection();
-    private readonly imsakiyahClock = new ImsakiyahClock(this, resolve(currentDirName, "..", "imsakiyah"));
-    private readonly nsfwLocker = new NSFWLocker(this);
+    public readonly nsfwLocker = new NSFWLocker(this);
+    public readonly imsakiyahClock = new ImsakiyahClock(this, resolve(currentDirName, "..", "imsakiyah"));
     private readonly commandsRegistrar = new CommandsRegistrar(this, resolve(currentDirName, "..", "commands"));
 
     public build(): void {
@@ -33,7 +33,7 @@ export class PakUstadz extends Client {
             this.logger.info("Bot sudah ready dan online di Discord!");
             const deletedGuilds = await this.deleteKickedGuilds();
             if (deletedGuilds.length > 0) this.logger.info(deletedGuilds, "Saya telah dikeluarkan dari guild-guild dibawah ini, data akan dihapus: ...");
-            await this.doActionOnEnabledGuilds();
+            await this.doActionOnEnabledGuilds({});
         });
         this.on("interactionCreate", interaction => {
             if (!interaction.isCommand() && !interaction.isAutocomplete()) return undefined;
@@ -52,16 +52,16 @@ export class PakUstadz extends Client {
         });
         this.on("debug", m => this.logger.debug(m));
 
-        this.imsakiyahClock.on("imsak", (daerah: string) => this.doActionOnEnabledGuilds(daerah, true));
-        this.imsakiyahClock.on("iftar", (daerah: string) => this.doActionOnEnabledGuilds(daerah, false));
+        this.imsakiyahClock.on("imsak", (daerah: string) => this.doActionOnEnabledGuilds({ daerah, lock: true }));
+        this.imsakiyahClock.on("iftar", (daerah: string) => this.doActionOnEnabledGuilds({ daerah, lock: false }));
     }
 
     public start(): Promise<string> {
         return this.login(process.env.DISCORD_TOKEN);
     }
 
-    private async doActionOnEnabledGuilds(daerah?: string, lock?: boolean): Promise<void> {
-        for (const g of await this.getEnabledGuilds()) { await this.nsfwLocker.action(g, daerah, lock); }
+    private async doActionOnEnabledGuilds(option: Options): Promise<void> {
+        for (const g of await this.getEnabledGuilds()) { await this.nsfwLocker.action(g, option); }
     }
 
     private async getEnabledGuilds(): Promise<Guild[]> {
