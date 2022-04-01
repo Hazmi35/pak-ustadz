@@ -30,8 +30,8 @@ COPY --from=build-stage /tmp/build/package-lock.json .
 COPY --from=build-stage /tmp/build/node_modules ./node_modules
 COPY --from=build-stage /tmp/build/dist ./dist
 
-# Mark logs folder as docker volume
-VOLUME [ "/app/logs" ]
+# Mark logs folder and data folder as Docker volume
+VOLUME [ "/app/logs", "/app/data" ]
 
 # Start the app with node
 CMD ["node", "--experimental-specifier-resolution=node", "dist/index.js"]

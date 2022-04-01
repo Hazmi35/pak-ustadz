@@ -102,6 +102,5 @@ dist
 # YTDL Caches
 cache/**
 
-# Prisma DB data
-prisma/*.db
-prisma/*.db-journal
+# SQLite DB data
+data/**/*
