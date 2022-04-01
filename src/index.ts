@@ -10,7 +10,7 @@ const pakUstadz = new PakUstadz({
         ReactionManager: 0
     }),
     retryLimit: 3,
-    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.DIRECT_MESSAGES]
+    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS]
 });
 
 process.on("unhandledRejection", e => {
@@ -25,6 +25,6 @@ process.on("uncaughtException", e => {
     process.exit(1);
 });
 
-await pakUstadz.build();
+pakUstadz.build();
 
 await pakUstadz.start();
