@@ -33,8 +33,8 @@ COPY --from=build-stage /tmp/build/prisma ./prisma
 COPY --from=build-stage /tmp/build/data ./data
 COPY --from=build-stage /tmp/build/LICENSE .
 
-# Mark logs folder and data folder as Docker volume
-VOLUME [ "/app/logs", "/app/data" ]
+# Mark data folder as Docker volume
+VOLUME [ "/app/data" ]
 
 # Start the app with node
 CMD ["node", "--experimental-specifier-resolution=node", "dist/index.js"]
