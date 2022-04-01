@@ -39,5 +39,11 @@
     "prisma": "^3.11.1",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.3"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.6",
+    "erlpack": "github:discord/erlpack",
+    "utf-8-validate": "^5.0.9",
+    "zlib-sync": "^0.1.7"
   }
 }
