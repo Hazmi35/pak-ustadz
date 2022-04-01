@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { Client, Collection, Guild } from "discord.js";
+import { Client, Collection, Guild, Snowflake } from "discord.js";
 import { createLogger } from "../util/Logger";
 import { CommandsRegistrar } from "../util/CommandsRegistrar";
 import { dirname, resolve } from "node:path";
@@ -21,6 +21,7 @@ export class PakUstadz extends Client {
     public serverData = this.prisma.server;
     public readonly imsakiyah: Collection<string, Imsakiyah[]> = new Collection();
     public readonly fastings: Collection<string, boolean> = new Collection();
+    public readonly failed: Set<Snowflake> = new Set();
     public readonly nsfwLocker = new NSFWLocker(this);
     public readonly imsakiyahClock = new ImsakiyahClock(this, resolve(currentDirName, "..", "imsakiyah"));
     private readonly commandsRegistrar = new CommandsRegistrar(this, resolve(currentDirName, "..", "commands"));
@@ -44,8 +45,14 @@ export class PakUstadz extends Client {
             await this.doActionOnEnabledGuilds({});
 
             // If Imsak and Iftar event from imsakiyahClock is emitted, then do the actions.
-            this.imsakiyahClock.on("imsak", (daerah: string) => this.doActionOnEnabledGuilds({ daerah, lock: true }));
-            this.imsakiyahClock.on("iftar", (daerah: string) => this.doActionOnEnabledGuilds({ daerah, lock: false }));
+            this.imsakiyahClock.on("imsak", async (daerah: string) => {
+                this.failed.clear();
+                await this.doActionOnEnabledGuilds({ daerah, lock: true });
+            });
+            this.imsakiyahClock.on("iftar", async (daerah: string) => {
+                this.failed.clear();
+                await this.doActionOnEnabledGuilds({ daerah, lock: false });
+            });
         });
 
         this.on("interactionCreate", interaction => {
