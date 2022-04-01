@@ -7,7 +7,7 @@ import { Guild } from "discord.js";
 export class CommandsRegistrar {
     public constructor(public pakUstadz: PakUstadz, private readonly commandsFilesPath: string) {}
 
-    public async build(): Promise<void> {
+    public async register(): Promise<void> {
         const commandFiles = await readdir(resolve(this.commandsFilesPath));
 
         for (const commandFile of commandFiles) {

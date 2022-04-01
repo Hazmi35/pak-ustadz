@@ -27,31 +27,45 @@ export class PakUstadz extends Client {
 
     public build(): void {
         this.on("ready", async () => {
-            await this.commandsRegistrar.build();
+            // Register slash commands
+            await this.commandsRegistrar.register();
+
+            // Connect to database
             await this.prisma.$connect();
+
+            // Init imsakiyahClock system
             await this.imsakiyahClock.init();
+
             this.logger.info("Bot sudah ready dan online di Discord!");
+
+            // Delete guildsData from database if the bot kicked in it
             const deletedGuilds = await this.deleteKickedGuilds();
-            if (deletedGuilds.length > 0) this.logger.info(deletedGuilds, "Saya telah dikeluarkan dari guild-guild dibawah ini, data akan dihapus: ...");
+            if (deletedGuilds.length > 0) this.logger.info(deletedGuilds, "Saya telah dikeluarkan dari guild-guild dibawah ini, datanya akan dihapus:");
             await this.doActionOnEnabledGuilds({});
         });
+
         this.on("interactionCreate", interaction => {
             if (!interaction.isCommand() && !interaction.isAutocomplete()) return undefined;
 
-            if (interaction.isCommand() && interaction.channel?.type === "DM") return interaction.reply("Maaf, bot ini hanya bisa digunakan di server / guild saja.");
+            if (interaction.isCommand() && interaction.channel?.type === "DM") {
+                return interaction.reply("Maaf, bot ini hanya bisa digunakan di server / guild saja.");
+            }
 
             const command = this.commands.get(interaction.commandName);
 
             command!.execute(interaction);
         });
+
         this.on("guildDelete", async g => {
             const guild = await this.serverData.findFirst({ where: { serverId: g.id } });
             if (!guild) return;
             await this.serverData.delete({ where: { id: guild.id } });
             this.logger.info(`Saya telah dikeluarkan dari guild: ${g.name}, data untuk server tersebut terhapus.`);
         });
+
         this.on("debug", m => this.logger.debug(m));
 
+        // If Imsak and Iftar event from imsakiyahClock is emitted, then do the actions.
         this.imsakiyahClock.on("imsak", (daerah: string) => this.doActionOnEnabledGuilds({ daerah, lock: true }));
         this.imsakiyahClock.on("iftar", (daerah: string) => this.doActionOnEnabledGuilds({ daerah, lock: false }));
     }
@@ -70,8 +84,7 @@ export class PakUstadz extends Client {
     }
 
     private async deleteKickedGuilds(): Promise<Server[]> {
-        const guilds = await this.getEnabledGuilds();
-        const deletedGuilds = await this.serverData.findMany({ where: { serverId: { notIn: guilds.map(g => g.id) } } });
+        const deletedGuilds = await this.serverData.findMany({ where: { serverId: { notIn: (await this.getEnabledGuilds()).map(g => g.id) } } });
         await this.serverData.deleteMany({ where: { id: { in: deletedGuilds.map(d => d.id) } } });
         return deletedGuilds;
     }
