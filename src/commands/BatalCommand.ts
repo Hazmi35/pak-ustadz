@@ -7,10 +7,10 @@ export class BatalCommand extends BaseCommand {
         super(pakUstadz);
         this.meta
             .setName("batal")
-            .setDescription("Batalkan puasa atau pendaftaran")
+            .setDescription("Batalkan puasa atau pendaftaran bot Pak Ustadz")
             .addBooleanOption(input => input
                 .setName("boolean")
-                .setDescription("Batalkan pendaftaran")
+                .setDescription("Batalkan pendaftaran bot Pak Ustadz?")
                 .setRequired(false));
     }
 
