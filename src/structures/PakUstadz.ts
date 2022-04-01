@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { BaseCommand } from "./BaseCommand";
 import prisma from "@prisma/client"; // @prisma/client is not ESM
 import { Imsakiyah, ImsakiyahClock } from "../util/ImsakiyahClock";
+import { NSFWLocker } from "../util/NSFWLocker";
 const { PrismaClient } = prisma;
 
 
@@ -21,28 +22,30 @@ export class PakUstadz extends Client {
     public readonly imsakiyah: Collection<string, Imsakiyah[]> = new Collection();
     public readonly fastings: Collection<string, boolean> = new Collection();
     private readonly imsakiyahClock = new ImsakiyahClock(this, resolve(currentDirName, "..", "imsakiyah"));
+    private readonly nsfwLocker = new NSFWLocker(this);
     private readonly commandsRegistrar = new CommandsRegistrar(this, resolve(currentDirName, "..", "commands"));
 
-    public async build(): Promise<void> {
-        return new Promise(res => {
-            this.on("ready", async () => {
-                await this.commandsRegistrar.build();
-                await this.prisma.$connect();
-                this.logger.info("Bot sudah ready dan online di Discord!");
-                await this.imsakiyahClock.init();
-            });
-            this.on("interactionCreate", interaction => {
-                if (!interaction.isCommand() && !interaction.isAutocomplete()) return undefined;
-
-                if (interaction.isCommand() && interaction.channel?.type === "DM") return interaction.reply("Maaf, bot ini hanya bisa digunakan di server / guild saja.");
-
-                const command = this.commands.get(interaction.commandName);
-
-                command!.execute(interaction);
-            });
-            this.on("debug", m => this.logger.debug(m));
-            res();
+    public build(): void {
+        this.on("ready", async () => {
+            await this.commandsRegistrar.build();
+            await this.prisma.$connect();
+            this.logger.info("Bot sudah ready dan online di Discord!");
+            await this.imsakiyahClock.init();
+            this.guilds.cache.forEach(g => this.nsfwLocker.action(g));
         });
+        this.on("interactionCreate", interaction => {
+            if (!interaction.isCommand() && !interaction.isAutocomplete()) return undefined;
+
+            if (interaction.isCommand() && interaction.channel?.type === "DM") return interaction.reply("Maaf, bot ini hanya bisa digunakan di server / guild saja.");
+
+            const command = this.commands.get(interaction.commandName);
+
+            command!.execute(interaction);
+        });
+        this.on("debug", m => this.logger.debug(m));
+
+        this.imsakiyahClock.on("imsak", (daerah: string) => this.guilds.cache.forEach(g => this.nsfwLocker.action(g, daerah, true)));
+        this.imsakiyahClock.on("iftar", (daerah: string) => this.guilds.cache.forEach(g => this.nsfwLocker.action(g, daerah, false)));
     }
 
     public start(): Promise<string> {
