@@ -1,4 +1,4 @@
-import { CommandInteraction } from "discord.js";
+import { Collection, CommandInteraction, Snowflake, TextChannel } from "discord.js";
 import { BaseCommand } from "../structures/BaseCommand";
 import { PakUstadz } from "../structures/PakUstadz";
 
@@ -25,6 +25,19 @@ export class KonfigCommand extends BaseCommand {
         if (!botPermissions.has(["MANAGE_CHANNELS", "MANAGE_ROLES"])) {
             const missing = botPermissions.missing(["MANAGE_CHANNELS", "MANAGE_ROLES"]);
             return ctx.reply({ ephemeral: true, content: `Saya tidak punya permission: ${missing.map(p => `\`${p}\``).join(", ")} untuk melakukan tugas saya!` });
+        }
+
+        const nsfwChannels = ctx.guild!.channels.cache.filter(c => c.type === "GUILD_TEXT" && c.nsfw) as Collection<Snowflake, TextChannel>;
+
+        const missingPerms: Snowflake[] = [];
+        for (const c of nsfwChannels.values()) {
+            const permsMissing = c.permissionsFor(ctx.client.user!)!.missing("MANAGE_ROLES");
+            if (permsMissing.length > 0) missingPerms.push(c.id);
+        }
+
+        if (missingPerms.length > 0) {
+            const message = missingPerms.map(c => `**<#${c}>**`);
+            return ctx.reply(`Saya tidak memiliki permission \`Manage Permissions\` di beberapa NSFW channel: ${message.join(", ")}`);
         }
 
         let currentData = await this.pakUstadz.serverData.findFirst({ where: { serverId: ctx.guildId! } });
