@@ -18,7 +18,6 @@ export class CommandsRegistrar {
         }
 
         const devGuild: Guild | undefined = process.env.DEV_GUILD ? await this.pakUstadz.guilds.fetch(process.env.DEV_GUILD) : undefined;
-
         const cmds = this.pakUstadz.commands.map(c => c.meta.toJSON() as RESTPostAPIApplicationCommandsJSONBody);
 
         if (this.pakUstadz.isProd) await this.pakUstadz.application!.commands.set(cmds);
