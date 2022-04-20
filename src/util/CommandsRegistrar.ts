@@ -20,10 +20,20 @@ export class CommandsRegistrar {
         const devGuild: Guild | undefined = process.env.DEV_GUILD ? await this.pakUstadz.guilds.fetch(process.env.DEV_GUILD) : undefined;
         const cmds = this.pakUstadz.commands.map(c => c.meta.toJSON() as RESTPostAPIApplicationCommandsJSONBody);
 
-        if (this.pakUstadz.isProd) await this.pakUstadz.application!.commands.set(cmds);
-        else await devGuild?.commands.set(cmds);
+        if (devGuild === undefined && !this.pakUstadz.isProd) {
+            this.pakUstadz.logger.warn(
+                "Bot sedang menggunakan mode development, tapi DEV_GUILD tidak sah. " +
+                "ApplicationCommands akan didaftarkan secara global."
+            );
+        }
 
-        this.pakUstadz.logger.info("Bot sukses mendaftarkan commands application");
+        // @ts-expect-error discord-api-typings in discord.js and @discordjs/builders conflict.
+        await this.pakUstadz.application!.commands.set(cmds, this.pakUstadz.isProd ? undefined : devGuild?.id);
+
+        this.pakUstadz.logger.info(
+            "Bot sukses mendaftarkan ApplicationCommands " +
+            `${this.pakUstadz.isProd || devGuild === undefined ? "secara global" : `untuk DEV_GUILD "${devGuild.name}"`}`
+        );
     }
 
     private async import(path: string): Promise<BaseCommand | undefined> {
