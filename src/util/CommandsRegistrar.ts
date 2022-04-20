@@ -3,6 +3,7 @@ import { readdir } from "node:fs/promises";
 import { resolve, parse } from "node:path";
 import { BaseCommand } from "../structures/BaseCommand";
 import { Guild } from "discord.js";
+import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v9";
 
 export class CommandsRegistrar {
     public constructor(public pakUstadz: PakUstadz, private readonly commandsFilesPath: string) {}
@@ -18,8 +19,10 @@ export class CommandsRegistrar {
 
         const devGuild: Guild | undefined = process.env.DEV_GUILD ? await this.pakUstadz.guilds.fetch(process.env.DEV_GUILD) : undefined;
 
-        if (this.pakUstadz.isProd) await this.pakUstadz.application!.commands.set(this.pakUstadz.commands.map(c => c.meta.toJSON()));
-        else await devGuild?.commands.set(this.pakUstadz.commands.map(c => c.meta.toJSON()));
+        const cmds = this.pakUstadz.commands.map(c => c.meta.toJSON() as RESTPostAPIApplicationCommandsJSONBody);
+
+        if (this.pakUstadz.isProd) await this.pakUstadz.application!.commands.set(cmds);
+        else await devGuild?.commands.set(cmds);
 
         this.pakUstadz.logger.info("Bot sukses mendaftarkan commands application");
     }
