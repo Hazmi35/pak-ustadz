@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@hazmi35/eslint-config": "^8.3.0",
-    "@typescript-eslint/eslint-plugin": "^5.20.0",
+    "@typescript-eslint/eslint-plugin": "^5.48.1",
     "@typescript-eslint/parser": "^5.20.0",
     "eslint": "^8.13.0",
     "prisma": "^3.12.0",
