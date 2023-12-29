@@ -7,7 +7,7 @@ on:
     branches:
       - master
     paths:
-      - ".github/workflows/docker.yml"
+      - ".github/workflows/docker.yaml"
       - "Dockerfile"
 
 jobs:
