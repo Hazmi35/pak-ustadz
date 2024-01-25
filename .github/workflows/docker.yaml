@@ -72,7 +72,7 @@ jobs:
       - name: Update repo description
         continue-on-error: true
         if: ${{ github.event_name == 'release' }}
-        uses: peter-evans/dockerhub-description@v3.0.0
+        uses: peter-evans/dockerhub-description@v4.0.0
         with:
          username: hazmi35
          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
