@@ -1,4 +1,4 @@
-import { Collection, CommandInteraction, Snowflake, TextChannel } from "discord.js";
+/* import { Collection, CommandInteraction, Snowflake, TextChannel } from "discord.js";
 import { BaseCommand } from "../structures/BaseCommand";
 import { PakUstadz } from "../structures/PakUstadz";
 
@@ -52,3 +52,4 @@ export class KonfigCommand extends BaseCommand {
         await ctx.reply(`Berhasil ${enabled ? "menyalakan" : "mematikan"} bot di server ini!`);
     }
 }
+ */

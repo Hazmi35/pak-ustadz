@@ -1,8 +1,9 @@
-import pino from "pino";
 import { resolve } from "node:path";
+import process from "node:process";
+import { pino } from "pino";
 
 export function createLogger(name: string, lang: string, type: "manager" | "shard", shardID?: number, debug = false): pino.Logger {
-    const dateFormat = Intl.DateTimeFormat(lang, {
+    const dateFormat = new Intl.DateTimeFormat(lang, {
         year: "numeric",
         month: "numeric",
         day: "numeric",
@@ -13,13 +14,11 @@ export function createLogger(name: string, lang: string, type: "manager" | "shar
         name,
         timestamp: true,
         level: debug ? "debug" : "info",
-        /*
-         * formatters: {
-         *     bindings: () => ({
-         *         pid: type === "shard" && shardID !== undefined ? `Shard #${shardID}` : "ShardManager"
-         *     })
-         * },
-         */
+        formatters: {
+            bindings: () => ({
+                pid: type === "shard" && shardID !== undefined ? `Shard #${shardID}` : "ShardManager"
+            })
+        },
         transport: {
             targets: [
                 { target: "pino/file", level: "info", options: { destination: resolve(process.cwd(), "logs", `${name}-${date}.log`) } },
@@ -33,7 +32,7 @@ export function createLogger(name: string, lang: string, type: "manager" | "shar
 function formatDate(dateFormat: Intl.DateTimeFormat, date: Date | number = new Date()): string {
     const data = dateFormat.formatToParts(date);
     return "<year>-<month>-<day>"
-        .replace(/<year>/g, data.find(d => d.type === "year")!.value)
-        .replace(/<month>/g, data.find(d => d.type === "month")!.value)
-        .replace(/<day>/g, data.find(d => d.type === "day")!.value);
+        .replaceAll("<year>", data.find(dt => dt.type === "year")!.value)
+        .replaceAll("<month>", data.find(dt => dt.type === "month")!.value)
+        .replaceAll("<day>", data.find(dt => dt.type === "day")!.value);
 }

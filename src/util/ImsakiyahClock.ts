@@ -1,7 +1,8 @@
-import { PakUstadz } from "../structures/PakUstadz";
+/* import { EventEmitter } from "node:events";
 import { readdir, readFile } from "node:fs/promises";
-import { resolve } from "node:path";
-import { EventEmitter } from "node:events";
+import { resolve as resolvePath } from "node:path";
+import { setInterval } from "node:timers";
+import type { PakUstadz } from "../structures/PakUstadz.js";
 
 export class ImsakiyahClock extends EventEmitter {
     private isInitialized = false;
@@ -9,8 +10,9 @@ export class ImsakiyahClock extends EventEmitter {
 
     public async init(): Promise<void> {
         const imsakiyahFiles = await readdir(this.imsakiyahPath);
-        for (const imsakiyahFile of imsakiyahFiles) {
-            const imsakiyah = JSON.parse((await readFile(resolve(this.imsakiyahPath, imsakiyahFile))).toString()) as Imsakiyah[];
+        for await (const imsakiyahFile of imsakiyahFiles) {
+            // eslint-disable-next-line unicorn/no-await-expression-member
+            const imsakiyah = JSON.parse((await readFile(resolvePath(this.imsakiyahPath, imsakiyahFile))).toString()) as Imsakiyah[];
             this.pakUstadz.imsakiyah.set(
                 imsakiyahFile.replace(".json", ""),
                 imsakiyah.map(i => ({ ...i, imsak: new Date(i.imsak), maghrib: new Date(i.maghrib) }))
@@ -18,38 +20,39 @@ export class ImsakiyahClock extends EventEmitter {
         }
         this.isInitialized = true;
         await this.doClock();
-        setInterval(() => this.doClock(), 1000);
+        setInterval(async () => this.doClock(), 1_000);
     }
 
     // This is promise because to control startup flow.
-    public doClock(): Promise<void> {
-        return new Promise(res => {
-            if (!this.isInitialized) return undefined;
+    public async doClock(): Promise<void> {
+        return new Promise(resolve => {
+            if (!this.isInitialized) return;
             const now = new Date(Date.now());
-            for (const [k, i] of this.pakUstadz.imsakiyah) {
+            for (const [a, i] of this.pakUstadz.imsakiyah) {
                 const today = i.find(i2 => i2.bulan === now.getMonth() && i2.tanggal === now.getDate());
 
                 if (today === undefined) continue;
 
-                if (now >= today.imsak && now < today.maghrib && this.pakUstadz.fastings.get(k) !== true) {
-                    this.pakUstadz.fastings.set(k, true);
-                    this.emit("imsak", k);
+                if (now >= today.imsak && now < today.maghrib && this.pakUstadz.fastings.get(a) !== true) {
+                    this.pakUstadz.fastings.set(a, true);
+                    this.emit("imsak", a);
                 }
 
-                if (now >= today.maghrib && this.pakUstadz.fastings.get(k) !== false) {
-                    this.pakUstadz.fastings.set(k, false);
-                    this.emit("iftar", k);
+                if (now >= today.maghrib && this.pakUstadz.fastings.get(a) !== false) {
+                    this.pakUstadz.fastings.set(a, false);
+                    this.emit("iftar", a);
                 }
             }
-            res();
+            resolve();
         });
     }
 }
 
-export interface Imsakiyah {
+export type Imsakiyah = {
     bulan: number;
     tanggal: number;
     hari: number;
     imsak: Date;
     maghrib: Date;
-}
+};
+ */
