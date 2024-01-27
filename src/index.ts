@@ -1,37 +1,44 @@
-import "dotenv/config";
-import { Intents, Options } from "discord.js";
-import { PakUstadz } from "./structures/PakUstadz";
-import { CustomError } from "./util/CustomErrror";
-
-// TODO:
-/*
- * Gunakan sesuatu yang bisa membaca timezone! (Seperti date-fns)
- * Untuk saat ini, kita memaksa Node.js untuk menggunakan timezone Asia/Jakarta
- */
-
-process.env.TZ = "Asia/Jakarta";
+import "source-map-support/register";
+import process from "node:process";
+import { IntentsBitField, Options } from "discord.js";
+import { PakUstadz } from "./structures/PakUstadz.js";
+import { CustomError } from "./util/CustomError.js";
 
 const pakUstadz = new PakUstadz({
     makeCache: Options.cacheWithLimits({
-        ...Options.defaultMakeCacheSettings,
+        ...Options.DefaultMakeCacheSettings,
+
         // Don't cache these
         MessageManager: 0,
-        ReactionManager: 0
+        ReactionManager: 0,
+        GuildEmojiManager: 0,
+        BaseGuildEmojiManager: 0,
+        DMMessageManager: 0,
+        GuildForumThreadManager: 0,
+        GuildMessageManager: 0,
+        GuildStickerManager: 0,
+        GuildTextThreadManager: 0,
+        GuildInviteManager: 0,
+        GuildBanManager: 0,
+        PresenceManager: 0,
+        ReactionUserManager: 0,
+        StageInstanceManager: 0,
+        ThreadManager: 0,
+        VoiceStateManager: 0
     }),
-    retryLimit: 3,
     shardCount: Number(process.env.SHARD_COUNT ?? 0),
-    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS]
+    intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers]
 });
 
-process.on("unhandledRejection", e => {
-    if (e instanceof Error) {
-        pakUstadz.logger.error(e);
+process.on("unhandledRejection", err => {
+    if (err instanceof Error) {
+        pakUstadz.logger.error(err);
     } else {
-        pakUstadz.logger.error(CustomError("PromiseError", e as string));
+        pakUstadz.logger.error(new CustomError("PromiseError", err as string));
     }
 });
-process.on("uncaughtException", e => {
-    pakUstadz.logger.fatal(e);
+process.on("uncaughtException", err => {
+    pakUstadz.logger.fatal(err);
     process.exit(1);
 });
 

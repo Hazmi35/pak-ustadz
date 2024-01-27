@@ -99,8 +99,6 @@ dist
 # TernJS port file
 .tern-port
 
-# YTDL Caches
-cache/**
-
 # SQLite DB data
 data/**/*
+!data/.gitkeep

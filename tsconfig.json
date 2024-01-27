@@ -1,21 +1,11 @@
 {
-	"compilerOptions": {
-		"target": "ES2021",
-		"module": "ES2022",
-		"moduleResolution": "node",
-		"lib": ["ES2021"],
-		"strict": true,
-		"outDir": "dist",
-		"esModuleInterop": true,
-		"allowSyntheticDefaultImports": true,
-		"experimentalDecorators": true,
-		"emitDecoratorMetadata": true,
-		"skipLibCheck": false,
-		"noEmitHelpers": true,
-		"importHelpers": true,
-		"resolveJsonModule": true,
-		"typeRoots": ["node_modules/@types", "src/typings"]
-	},
-	"exclude": [],
-	"include": ["src/**/*", "src/imsakiyah/*.json"]
+    "extends": "@tsconfig/node-lts/tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "noEmitHelpers": true,
+        "importHelpers": true,
+    },
+    "exclude": [],
+    "include": ["src/**/*"]
 }

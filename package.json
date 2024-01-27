@@ -7,43 +7,36 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "npm run prisma:migrate && npm run lint && npm run compile",
-    "compile": "tsc --build tsconfig.json",
+    "build": "pnpm run compile && pnpm run lint",
+    "compile": "tsc",
+    "lint": "eslint . --ignore-pattern 'dist/**/*",
+    "lint:fix": "eslint . --fix",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "npm run prisma:generate && prisma migrate deploy",
-    "lint": "eslint . --ignore-path .gitignore --ext .ts",
-    "lint:fix": "eslint . --ignore-path .gitignore --ext .ts --fix",
-    "start": "node --experimental-specifier-resolution=node dist/index",
-    "start:dev": "node --no-warnings --experimental-specifier-resolution=node --loader ts-node/esm src/index"
-  },
-  "eslintConfig": {
-    "parserOptions": {
-      "project": "./tsconfig.json"
-    },
-    "extends": "@hazmi35/eslint-config/typescript/node"
+    "start": "node --env-file=.env dist/index.js",
+    "start:dev": "pnpm run compile && pnpm run start"
   },
   "dependencies": {
-    "@discordjs/builders": "^0.13.0",
-    "@prisma/client": "^3.12.0",
-    "discord.js": "^13.6.0",
-    "dotenv": "^16.0.0",
-    "node-fetch": "^3.2.3",
-    "pino": "^7.10.0",
-    "pino-pretty": "^7.6.1"
+    "@discordjs/builders": "^1.7.0",
+    "better-sqlite3": "^9.3.0",
+    "discord.js": "^14.14.1",
+    "drizzle-orm": "^0.29.3",
+    "pino": "^8.17.2",
+    "pino-pretty": "^10.3.1",
+    "source-map-support": "^0.5.21",
+    "tslib": "^2.6.2"
   },
   "devDependencies": {
-    "@hazmi35/eslint-config": "^8.3.0",
-    "@typescript-eslint/eslint-plugin": "^5.20.0",
-    "@typescript-eslint/parser": "^5.20.0",
-    "eslint": "^8.13.0",
-    "prisma": "^3.12.0",
-    "ts-node": "^10.7.0",
-    "typescript": "^4.6.3"
+    "@hazmi35/eslint-config": "^13.2.3",
+    "@tsconfig/node-lts": "^20.1.1",
+    "@types/better-sqlite3": "^7.6.9",
+    "discord-api-types": "^0.37.67",
+    "drizzle-kit": "^0.20.13",
+    "typescript": "^5.3.3"
   },
   "optionalDependencies": {
-    "bufferutil": "^4.0.6",
-    "erlpack": "github:discord/erlpack",
-    "utf-8-validate": "^5.0.9",
-    "zlib-sync": "^0.1.7"
+    "bufferutil": "^4.0.8",
+    "utf-8-validate": "^6.0.3",
+    "zlib-sync": "^0.1.9"
   }
 }

@@ -1,30 +1,28 @@
 import "dotenv/config";
-import { Client, Collection, Guild, Snowflake } from "discord.js";
-import { createLogger } from "../util/Logger";
-import { CommandsRegistrar } from "../util/CommandsRegistrar";
-import { dirname, resolve } from "node:path";
+import { dirname, resolve, join } from "node:path";
+import process from "node:process";
 import { fileURLToPath } from "node:url";
-import { BaseCommand } from "./BaseCommand";
-import prisma, { Server } from "@prisma/client"; // @prisma/client is not ESM
-import { Imsakiyah, ImsakiyahClock } from "../util/ImsakiyahClock";
-import { NSFWLocker, Options } from "../util/NSFWLocker";
-const { PrismaClient } = prisma;
-
+import Database from "better-sqlite3";
+import { Client, Collection } from "discord.js";
+import { drizzle } from "drizzle-orm/better-sqlite3";
+import { CommandsRegistrar } from "../util/CommandsRegistrar.js";
+import { createLogger } from "../util/Logger.js";
+import type { BaseCommand } from "./BaseCommand.js";
+import * as schema from "./DatabaseSchema.js";
 
 const currentDirName = dirname(fileURLToPath(import.meta.url));
 export class PakUstadz extends Client {
     public isProd = process.env.NODE_ENV === "production";
     public logger = createLogger("client", "id-ID", "shard", this.shard?.ids[0], !this.isProd);
     public commands = new Collection<string, BaseCommand>();
-    public prisma = new PrismaClient();
-    public userData = this.prisma.user;
-    public serverData = this.prisma.server;
-    public readonly imsakiyah: Collection<string, Imsakiyah[]> = new Collection();
-    public readonly fastings: Collection<string, boolean> = new Collection();
-    public readonly failed: Set<Snowflake> = new Set();
-    public readonly nsfwLocker = new NSFWLocker(this);
-    public readonly imsakiyahClock = new ImsakiyahClock(this, resolve(currentDirName, "..", "imsakiyah"));
+    public readonly sqlite = new Database(join(process.cwd(), "data", "database.db"));
+    public readonly db = drizzle(this.sqlite, { schema });
     private readonly commandsRegistrar = new CommandsRegistrar(this, resolve(currentDirName, "..", "commands"));
+
+    // public readonly fastings = new Collection<string, boolean>();
+    // public readonly failed = new Set<Snowflake>();
+    // public readonly nsfwLocker = new NSFWLocker(this);
+    // public readonly imsakiyahClock = new ImsakiyahClock(this, resolve(currentDirName, "..", "imsakiyah"));
 
     public build(): void {
         this.on("ready", async () => {
@@ -32,14 +30,14 @@ export class PakUstadz extends Client {
             await this.commandsRegistrar.register();
 
             // Connect to database
-            await this.prisma.$connect();
+            // await this.prisma.$connect();
 
             // Init imsakiyahClock system
-            await this.imsakiyahClock.init();
+            // await this.imsakiyahClock.init();
 
             this.logger.info("Bot sudah ready dan online di Discord!");
 
-            // Delete guildsData from database if the bot kicked in it
+            /*             // Delete guildsData from database if the bot kicked in it
             const deletedGuilds = await this.deleteKickedGuilds();
             if (deletedGuilds.length > 0) this.logger.info(deletedGuilds, "Saya telah dikeluarkan dari guild-guild dibawah ini, datanya akan dihapus:");
             await this.doActionOnEnabledGuilds({});
@@ -54,10 +52,10 @@ export class PakUstadz extends Client {
                 this.failed.clear();
                 await this.doActionOnEnabledGuilds({ daerah, lock: false });
                 this.logger.info(`${daerah.split("-").map(n => `${n.charAt(0).toUpperCase()}${n.slice(1)}`).join(" ")} Sudah berbuka puasa.`);
-            });
+            }); */
         });
 
-        this.on("interactionCreate", interaction => {
+        /*         this.on("interactionCreate", interaction => {
             if (!interaction.isCommand() && !interaction.isAutocomplete()) return undefined;
 
             if (interaction.isCommand() && interaction.channel?.type === "DM") {
@@ -67,14 +65,14 @@ export class PakUstadz extends Client {
             const command = this.commands.get(interaction.commandName);
 
             command!.execute(interaction);
-        });
+        }); */
 
-        this.on("guildDelete", async g => {
+        /*         this.on("guildDelete", async g => {
             const guild = await this.serverData.findFirst({ where: { serverId: g.id } });
             if (!guild) return;
             await this.serverData.delete({ where: { id: guild.id } });
             this.logger.info(`Saya telah dikeluarkan dari guild: ${g.name}, data untuk server tersebut terhapus.`);
-        });
+        }); */
 
         this.on("warn", message => this.logger.warn(message));
 
@@ -82,14 +80,14 @@ export class PakUstadz extends Client {
 
         this.on("rateLimit", ratelimitData => this.logger.warn(ratelimitData, "Bot mendapatkan ratelimit:"));
 
-        this.on("debug", m => this.logger.debug(m));
+        this.on("debug", message => this.logger.debug(message));
     }
 
-    public start(): Promise<string> {
+    public async start(): Promise<string> {
         return this.login(process.env.DISCORD_TOKEN);
     }
 
-    private async doActionOnEnabledGuilds(option: Options): Promise<void> {
+/*     private async doActionOnEnabledGuilds(option: Options): Promise<void> {
         for (const g of await this.getEnabledGuilds()) { await this.nsfwLocker.action(g, option); }
     }
 
@@ -102,5 +100,5 @@ export class PakUstadz extends Client {
         const deletedGuilds = await this.serverData.findMany({ where: { serverId: { notIn: (await this.getEnabledGuilds()).map(g => g.id) } } });
         await this.serverData.deleteMany({ where: { id: { in: deletedGuilds.map(d => d.id) } } });
         return deletedGuilds;
-    }
+    } */
 }

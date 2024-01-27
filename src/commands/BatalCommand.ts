@@ -1,6 +1,6 @@
-import { CommandInteraction } from "discord.js";
-import { BaseCommand } from "../structures/BaseCommand";
-import { PakUstadz } from "../structures/PakUstadz";
+/* import type { CommandInteraction } from "discord.js";
+import { BaseCommand } from "../structures/BaseCommand.js";
+import type { PakUstadz } from "../structures/PakUstadz.js";
 
 export class BatalCommand extends BaseCommand {
     public constructor(public pakUstadz: PakUstadz) {
@@ -35,3 +35,4 @@ export class BatalCommand extends BaseCommand {
         return ctx.reply("Yahh... Kok kamu batal puasa hari ini? Lain kali kamu harus lebih baik ya!");
     }
 }
+ */

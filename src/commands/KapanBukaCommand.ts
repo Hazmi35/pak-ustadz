@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionChoice, AutocompleteInteraction, CommandInteraction } from "discord.js";
+/* import { ApplicationCommandOptionChoice, AutocompleteInteraction, CommandInteraction } from "discord.js";
 import { BaseCommand } from "../structures/BaseCommand";
 import { PakUstadz } from "../structures/PakUstadz";
 
@@ -46,3 +46,4 @@ export class KapanBukaCommand extends BaseCommand {
             .map(i => ({ name: i.split("-").map(n => `${n.charAt(0).toUpperCase()}${n.slice(1)}`).join(" "), value: i }));
     }
 }
+ */
