@@ -1,4 +1,4 @@
-import "source-map-support/register";
+import "source-map-support/register.js";
 import process from "node:process";
 import { IntentsBitField, Options } from "discord.js";
 import { PakUstadz } from "./structures/PakUstadz.js";
@@ -26,7 +26,7 @@ const pakUstadz = new PakUstadz({
         ThreadManager: 0,
         VoiceStateManager: 0
     }),
-    shardCount: Number(process.env.SHARD_COUNT ?? 0),
+    shardCount: Number(process.env.SHARD_COUNT ?? 1),
     intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMembers]
 });
 

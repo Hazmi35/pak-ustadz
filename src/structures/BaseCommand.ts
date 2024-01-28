@@ -7,6 +7,8 @@ export class BaseCommand {
 
     public constructor(public pakUstadz: PakUstadz) {}
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function, @typescript-eslint/no-unused-vars
-    public execute(ctx: CommandInteraction | Interaction): any {}
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public execute(ctx: CommandInteraction | Interaction): Interaction | Promise<Interaction> | Promise<undefined> | undefined {
+        return undefined;
+    }
 }

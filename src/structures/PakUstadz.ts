@@ -1,9 +1,8 @@
-import "dotenv/config";
 import { dirname, resolve, join } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import Database from "better-sqlite3";
-import { Client, Collection } from "discord.js";
+import { ChannelType, Client, Collection } from "discord.js";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import { CommandsRegistrar } from "../util/CommandsRegistrar.js";
 import { createLogger } from "../util/Logger.js";
@@ -29,8 +28,8 @@ export class PakUstadz extends Client {
             // Register slash commands
             await this.commandsRegistrar.register();
 
-            // Connect to database
-            // await this.prisma.$connect();
+            // Prepare database
+            await this.sqlite.pragma("journal_mode = WAL");
 
             // Init imsakiyahClock system
             // await this.imsakiyahClock.init();
@@ -55,17 +54,20 @@ export class PakUstadz extends Client {
             }); */
         });
 
-        /*         this.on("interactionCreate", interaction => {
-            if (!interaction.isCommand() && !interaction.isAutocomplete()) return undefined;
+        this.on("interactionCreate", async interaction => {
+            if (!interaction.isCommand() && !interaction.isAutocomplete()) return;
 
-            if (interaction.isCommand() && interaction.channel?.type === "DM") {
-                return interaction.reply("Maaf, bot ini hanya bisa digunakan di server / guild saja.");
+            if (interaction.isCommand() && interaction.channel?.type === ChannelType.DM) {
+                await interaction.reply("Maaf, bot ini hanya bisa digunakan di server / guild saja.");
+                return;
             }
 
             const command = this.commands.get(interaction.commandName);
 
-            command!.execute(interaction);
-        }); */
+            if (!command) return;
+
+            await command.execute(interaction);
+        });
 
         /*         this.on("guildDelete", async g => {
             const guild = await this.serverData.findFirst({ where: { serverId: g.id } });

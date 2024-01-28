@@ -11,7 +11,7 @@ export class PingCommand extends BaseCommand {
             .setDescription("Tampilkan ping bot dalam milisekon!");
     }
 
-    public async execute(ctx: CommandInteraction): Promise<void> {
+    public async execute(ctx: CommandInteraction): Promise<undefined> {
         await ctx.reply({ ephemeral: true, content: "🏓 PING..." });
 
         const msg = await ctx.fetchReply();
