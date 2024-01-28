@@ -3,6 +3,7 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import Database from "better-sqlite3";
 import { ChannelType, Client, Collection } from "discord.js";
+import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import { CommandsRegistrar } from "../util/CommandsRegistrar.js";
 import { createLogger } from "../util/Logger.js";
@@ -69,12 +70,19 @@ export class PakUstadz extends Client {
             await command.execute(interaction);
         });
 
-        /*         this.on("guildDelete", async g => {
-            const guild = await this.serverData.findFirst({ where: { serverId: g.id } });
-            if (!guild) return;
-            await this.serverData.delete({ where: { id: guild.id } });
-            this.logger.info(`Saya telah dikeluarkan dari guild: ${g.name}, data untuk server tersebut terhapus.`);
-        }); */
+        this.on("guildDelete", async guild => {
+            const guildData = await this.db
+                .select({ id: schema.server.id })
+                .from(schema.server)
+                .where(eq(schema.server.id, guild.id))
+                .limit(1);
+
+            if (guildData.length === 0) return;
+
+            await this.db.delete(schema.server).where(eq(schema.server.id, guildData[0].id));
+
+            this.logger.info(`Saya telah dikeluarkan dari guild: ${guild.name}, data untuk server tersebut terhapus.`);
+        });
 
         this.on("warn", message => this.logger.warn(message));
 
