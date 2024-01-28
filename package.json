@@ -11,8 +11,7 @@
     "compile": "tsc",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "npm run prisma:generate && prisma migrate deploy",
+    "migrate": "pnpm exec drizzle-kit generate:sqlite",
     "start": "node --env-file=.env dist/index.js",
     "start:dev": "pnpm run compile && pnpm run start"
   },
@@ -21,6 +20,7 @@
     "better-sqlite3": "^9.3.0",
     "discord.js": "^14.14.1",
     "drizzle-orm": "^0.29.3",
+    "luxon": "^3.4.4",
     "pino": "^8.17.2",
     "pino-pretty": "^10.3.1",
     "source-map-support": "^0.5.21",
@@ -30,6 +30,7 @@
     "@hazmi35/eslint-config": "^13.2.4",
     "@tsconfig/node-lts": "^20.1.1",
     "@types/better-sqlite3": "^7.6.9",
+    "@types/luxon": "^3.4.2",
     "discord-api-types": "^0.37.67",
     "drizzle-kit": "^0.20.13",
     "typescript": "^5.3.3"

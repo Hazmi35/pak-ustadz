@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1706429381609,
+      "tag": "0000_thin_robbie_robertson",
+      "breakpoints": true
+    }
+  ]
+}

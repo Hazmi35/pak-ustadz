@@ -1,6 +1,8 @@
-/* import { Collection, CommandInteraction, Snowflake, TextChannel } from "discord.js";
-import { BaseCommand } from "../structures/BaseCommand";
-import { PakUstadz } from "../structures/PakUstadz";
+import type { Collection, CommandInteraction, InteractionResponse, Snowflake, TextChannel } from "discord.js";
+import { ChannelType } from "discord.js";
+import { BaseCommand } from "../structures/BaseCommand.js";
+import { server } from "../structures/DatabaseSchema.js";
+import type { PakUstadz } from "../structures/PakUstadz.js";
 
 export class KonfigCommand extends BaseCommand {
     public constructor(public pakUstadz: PakUstadz) {
@@ -14,24 +16,24 @@ export class KonfigCommand extends BaseCommand {
                 .setRequired(true));
     }
 
-    public async execute(ctx: CommandInteraction): Promise<void> {
-        if (!ctx.memberPermissions!.has(["MANAGE_CHANNELS", "MANAGE_ROLES"])) {
-            const missing = ctx.memberPermissions!.missing(["MANAGE_CHANNELS", "MANAGE_ROLES"]);
-            return ctx.reply({ ephemeral: true, content: `Kamu harus punya permission: ${missing.map(p => `\`${p}\``).join(", ")} untuk menjalankan perintah ini!` });
+    public async execute(ctx: CommandInteraction): Promise<InteractionResponse | undefined> {
+        const memberMissingPermissions = ctx.memberPermissions!.missing(["ManageChannels", "ManageRoles"]);
+        if (memberMissingPermissions.length > 0) {
+            return ctx.reply({ ephemeral: true, content: `Kamu harus punya permission: ${memberMissingPermissions.map(perm => `\`${perm}\``).join(", ")} untuk menjalankan perintah ini!` });
         }
 
-        const botPermissions = ctx.guild!.members.resolve(ctx.client.user!.id)!.permissions;
+        const botMissingPermissions = ctx.guild!.members.me!.permissions
+            .missing(["ManageChannels", "ManageRoles"]);
 
-        if (!botPermissions.has(["MANAGE_CHANNELS", "MANAGE_ROLES"])) {
-            const missing = botPermissions.missing(["MANAGE_CHANNELS", "MANAGE_ROLES"]);
-            return ctx.reply({ ephemeral: true, content: `Saya tidak punya permission: ${missing.map(p => `\`${p}\``).join(", ")} untuk melakukan tugas saya!` });
+        if (botMissingPermissions.length > 0) {
+            return ctx.reply({ ephemeral: true, content: `Saya tidak punya permission: ${memberMissingPermissions.map(perm => `\`${perm}\``).join(", ")} untuk melakukan tugas saya!` });
         }
 
-        const nsfwChannels = ctx.guild!.channels.cache.filter(c => c.type === "GUILD_TEXT" && c.nsfw) as Collection<Snowflake, TextChannel>;
+        const nsfwChannels = ctx.guild!.channels.cache.filter(c => c.type === ChannelType.GuildText && c.nsfw) as Collection<Snowflake, TextChannel>;
 
         const missingPerms: Snowflake[] = [];
         for (const c of nsfwChannels.values()) {
-            const permsMissing = c.permissionsFor(ctx.client.user!)!.missing("MANAGE_ROLES");
+            const permsMissing = c.permissionsFor(ctx.client.user)!.missing("ManageChannels");
             if (permsMissing.length > 0) missingPerms.push(c.id);
         }
 
@@ -40,16 +42,18 @@ export class KonfigCommand extends BaseCommand {
             return ctx.reply(`Saya tidak memiliki permission \`Manage Permissions\` di beberapa NSFW channel: ${message.join(", ")}`);
         }
 
-        let currentData = await this.pakUstadz.serverData.findFirst({ where: { serverId: ctx.guildId! } });
-        if (currentData === null) {
-            currentData = await this.pakUstadz.serverData.create({ data: { serverId: ctx.guildId!, enabled: false } });
-        }
+        const enabled = ctx.options.get("boolean")!.value as boolean;
 
-        const enabled = ctx.options.getBoolean("boolean")!;
+        const data = await this.pakUstadz.db
+            .insert(server)
+            .values({ id: ctx.guild!.id, enabled })
+            .returning()
+            .onConflictDoUpdate({ target: [server.id], set: { enabled } })
+            .execute();
 
-        await this.pakUstadz.serverData.update({ where: { id: currentData.id }, data: { enabled } });
-        if (enabled) await this.pakUstadz.nsfwLocker.action(ctx.guild!, {});
-        await ctx.reply(`Berhasil ${enabled ? "menyalakan" : "mematikan"} bot di server ini!`);
+        // if (data[0].enabled!) await this.pakUstadz.nsfwLocker.action(ctx.guild!, {});
+
+        return ctx.reply(`Berhasil ${enabled ? "menyalakan" : "mematikan"} bot di server ini!`);
     }
 }
- */
+

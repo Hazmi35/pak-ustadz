@@ -1,39 +1,47 @@
-/*
+import type { Guild, Snowflake, TextChannel } from "discord.js";
 import { ChannelType } from "discord.js";
-import type { DiscordAPIError, Guild, GuildMember, NonThreadGuildBasedChannel, Snowflake, TextChannel } from "discord.js";
+import { eq, inArray } from "drizzle-orm";
+import { users } from "../structures/DatabaseSchema.js";
 import type { PakUstadz } from "../structures/PakUstadz.js";
 
-export type Options = { city?: string; lock?: boolean; userId?: Snowflake; };
+export type Options = { lock?: boolean; userId?: Snowflake; };
 
-export class NSFWLocker {
+export class NsfwLocker {
     public constructor(public pakUstadz: PakUstadz) {}
 
     public async action(guild: Guild, options: Options): Promise<void> {
-        const { city: daerah, userId, lock } = options;
+        const { userId, lock } = options;
+
+        let enabledMembers: string[];
+
+        if (userId === undefined) {
+            const members = guild.members.cache.filter(a => !a.user.bot).map(a => a.id);
+
+            enabledMembers = await this.pakUstadz.db
+                .select({ id: users.id })
+                .from(users)
+                .where(inArray(users.id, members))
+                .execute()
+                .then(a => a.map(b => b.id));
+        } else {
+            enabledMembers = await this.pakUstadz.db
+                .select({ id: users.id })
+                .from(users)
+                .where(eq(users.id, userId))
+                .execute()
+                .then(a => a.map(b => b.id));
+        }
+
         const channels = guild.channels.cache.filter(c => c.type === ChannelType.GuildText && c.nsfw);
-        const enabledMembers = await this.pakUstadz.db.query.users.findMany({ select: { id: true, daerah: true }, where: { city: daerah, userId } });
-        const members = await guild.members.fetch({ user: enabledMembers.map(enabled => enabled.id) });
-        for await (const [, c] of channels) {
-            const ch = await c.fetch(false) as TextChannel;
-            for await (const [, member] of members) {
-                const enabledMember = enabledMembers.find(m3 => m3.id === member.id);
-                // const toUnlock = lock === undefined ? this.pakUstadz.fastings.get(enabledMember!.daerah) !== true : !lock;
-                // try {
-                //     await (toUnlock ? NSFWLocker.unlock(ch, member) : NSFWLocker.lock(ch, member));
-                // } catch (error: unknown) {
-                //     if ((error as DiscordAPIError).code === 50_001) return;
-                //     this.pakUstadz.logger.error(error);
-                // }
+
+        for await (const [_, a] of channels) {
+            const ch = await a.fetch(false) as TextChannel;
+            for await (const [, b] of enabledMembers) {
+                const member = await guild.members.fetch({ user: b });
+                // Continue later
             }
         }
-    }
 
-    public static async lock(channel: TextChannel, member: GuildMember): Promise<NonThreadGuildBasedChannel> {
-        return channel.permissionOverwrites.create(member, { VIEW_CHANNEL: false }, { reason: "Member ini sedang berpuasa" });
-    }
-
-    public static async unlock(channel: TextChannel, member: GuildMember): Promise<NonThreadGuildBasedChannel> {
-        return channel.permissionOverwrites.delete(member, "Member ini sudah berbuka puasa");
+        // const enabledMembers = await this.pakUstadz.db
     }
 }
- */

@@ -2,38 +2,51 @@ import { dirname, resolve, join } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import Database from "better-sqlite3";
-import { ChannelType, Client, Collection } from "discord.js";
+import type { Guild } from "discord.js";
+import { ChannelType, Client } from "discord.js";
 import { eq, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
-import { CommandsRegistrar } from "../util/CommandsRegistrar.js";
+import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import { createLogger } from "../util/Logger.js";
-import type { BaseCommand } from "./BaseCommand.js";
+import { CommandsRegistrar } from "./CommandsRegistrar.js";
 import * as schema from "./DatabaseSchema.js";
+import { Imsakiyah } from "./Imsakiyah.js";
+import { ImsakiyahClock } from "./ImsakiyahClock.js";
 
 const currentDirName = dirname(fileURLToPath(import.meta.url));
 export class PakUstadz extends Client {
     public isProd = process.env.NODE_ENV === "production";
     public logger = createLogger("client", "id-ID", "shard", this.shard?.ids[0], !this.isProd);
-    public commands = new Collection<string, BaseCommand>();
+
+    // Commands Registrar
+    private readonly commands = new CommandsRegistrar(this, resolve(currentDirName, "..", "commands"));
+
+    // Database
     public readonly sqlite = new Database(join(process.cwd(), "data", "database.db"));
     public readonly db = drizzle(this.sqlite, { schema });
-    private readonly commandsRegistrar = new CommandsRegistrar(this, resolve(currentDirName, "..", "commands"));
+
+    // Imsakiyah
+    public readonly imsakiyah = new Imsakiyah();
+    public readonly imsakiyahClock = new ImsakiyahClock(this.imsakiyah);
 
     // public readonly fastings = new Collection<string, boolean>();
     // public readonly failed = new Set<Snowflake>();
+    // public readonly imsakiyahClock = new ImsakiyahClock(this);
+
     // public readonly nsfwLocker = new NSFWLocker(this);
-    // public readonly imsakiyahClock = new ImsakiyahClock(this, resolve(currentDirName, "..", "imsakiyah"));
 
     public build(): void {
         this.on("ready", async () => {
             // Register slash commands
-            await this.commandsRegistrar.register();
+            await this.commands.register();
 
             // Prepare database
+            migrate(this.db, { migrationsFolder: "drizzle" });
             await this.sqlite.pragma("journal_mode = WAL");
 
-            // Init imsakiyahClock system
-            // await this.imsakiyahClock.init();
+            // Init Imsakiyah util
+            await this.imsakiyah.init();
+            await this.imsakiyahClock.init();
 
             this.logger.info("Bot sudah ready dan online di Discord!");
 
@@ -103,12 +116,18 @@ export class PakUstadz extends Client {
 
     /*     private async doActionOnEnabledGuilds(option: Options): Promise<void> {
         for (const g of await this.getEnabledGuilds()) { await this.nsfwLocker.action(g, option); }
-    }
+    }*/
 
     private async getEnabledGuilds(): Promise<Guild[]> {
-        const enabledGuilds = await this.serverData.findMany({ select: { serverId: true }, where: { enabled: true } });
-        return enabledGuilds.map<Guild | null>(g => this.guilds.resolve(g.serverId)!).filter(g => g !== null) as Guild[];
-    }*/
+        const enabledGuilds = await this.db
+            .select({ id: schema.server.id })
+            .from(schema.server)
+            .where(eq(schema.server.enabled, true))
+            .execute();
+
+        return enabledGuilds.map<Guild | null>(a => this.guilds.resolve(a.id))
+            .filter(b => b !== null) as Guild[];
+    }
 
     private async deleteKickedGuilds(): Promise<{ id: string; }[]> {
         const deletedGuilds = await this.db
@@ -116,6 +135,8 @@ export class PakUstadz extends Client {
             .from(schema.server)
             .where(inArray(schema.server.id, this.guilds.cache.map(a => a.id)))
             .execute();
+
+        if (deletedGuilds.length === 0) return [];
 
         await this.db
             .delete(schema.server)
