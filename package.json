@@ -9,7 +9,7 @@
   "scripts": {
     "build": "pnpm run compile && pnpm run lint",
     "compile": "tsc",
-    "lint": "eslint . --ignore-pattern 'dist/**/*",
+    "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "npm run prisma:generate && prisma migrate deploy",
