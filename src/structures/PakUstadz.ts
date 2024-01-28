@@ -3,7 +3,7 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import Database from "better-sqlite3";
 import { ChannelType, Client, Collection } from "discord.js";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import { CommandsRegistrar } from "../util/CommandsRegistrar.js";
 import { createLogger } from "../util/Logger.js";
@@ -37,10 +37,11 @@ export class PakUstadz extends Client {
 
             this.logger.info("Bot sudah ready dan online di Discord!");
 
-            /*             // Delete guildsData from database if the bot kicked in it
+            // Delete guildsData from database if the bot kicked in it
             const deletedGuilds = await this.deleteKickedGuilds();
             if (deletedGuilds.length > 0) this.logger.info(deletedGuilds, "Saya telah dikeluarkan dari guild-guild dibawah ini, datanya akan dihapus:");
-            await this.doActionOnEnabledGuilds({});
+
+            /* await this.doActionOnEnabledGuilds({});
 
             // If Imsak and Iftar event from imsakiyahClock is emitted, then do the actions.
             this.imsakiyahClock.on("imsak", async (daerah: string) => {
@@ -75,11 +76,14 @@ export class PakUstadz extends Client {
                 .select({ id: schema.server.id })
                 .from(schema.server)
                 .where(eq(schema.server.id, guild.id))
-                .limit(1);
+                .execute();
 
             if (guildData.length === 0) return;
 
-            await this.db.delete(schema.server).where(eq(schema.server.id, guildData[0].id));
+            await this.db
+                .delete(schema.server)
+                .where(inArray(schema.server.id, guildData.map(a => a.id)))
+                .execute();
 
             this.logger.info(`Saya telah dikeluarkan dari guild: ${guild.name}, data untuk server tersebut terhapus.`);
         });
@@ -97,18 +101,27 @@ export class PakUstadz extends Client {
         return this.login(process.env.DISCORD_TOKEN);
     }
 
-/*     private async doActionOnEnabledGuilds(option: Options): Promise<void> {
+    /*     private async doActionOnEnabledGuilds(option: Options): Promise<void> {
         for (const g of await this.getEnabledGuilds()) { await this.nsfwLocker.action(g, option); }
     }
 
     private async getEnabledGuilds(): Promise<Guild[]> {
         const enabledGuilds = await this.serverData.findMany({ select: { serverId: true }, where: { enabled: true } });
         return enabledGuilds.map<Guild | null>(g => this.guilds.resolve(g.serverId)!).filter(g => g !== null) as Guild[];
-    }
+    }*/
 
-    private async deleteKickedGuilds(): Promise<Server[]> {
-        const deletedGuilds = await this.serverData.findMany({ where: { serverId: { notIn: (await this.getEnabledGuilds()).map(g => g.id) } } });
-        await this.serverData.deleteMany({ where: { id: { in: deletedGuilds.map(d => d.id) } } });
+    private async deleteKickedGuilds(): Promise<{ id: string; }[]> {
+        const deletedGuilds = await this.db
+            .select({ id: schema.server.id })
+            .from(schema.server)
+            .where(inArray(schema.server.id, this.guilds.cache.map(a => a.id)))
+            .execute();
+
+        await this.db
+            .delete(schema.server)
+            .where(inArray(schema.server.id, deletedGuilds.map(b => b.id)))
+            .execute();
+
         return deletedGuilds;
-    } */
+    }
 }
