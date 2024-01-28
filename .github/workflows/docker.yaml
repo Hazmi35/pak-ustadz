@@ -31,7 +31,6 @@ jobs:
           username: hazmi35
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1.14.1
         if: ${{ github.event_name != 'pull_request' }}
@@ -40,37 +39,35 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract tag name
-        id: tags
-        run: echo ::set-output name=name::${GITHUB_REF##*/}
-
       - name: Generate Docker image metadata
-        uses: docker/metadata-action@v3.7.0
+        uses: docker/metadata-action@v5.5.0
         id: img_meta
         with:
           flavor: |
             latest=auto
           images: |
-            hazmi35/pak-ustadz
-            ghcr.io/Hazmi35/pak-ustadz
+            docker.io/${{ github.repository }}
+            ghcr.io/${{ github.repository }}
           tags: |
-            ${{ steps.tags.outputs.name }}
-            latest
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=ref,event=branch
+            type=sha,prefix=,suffix=,format=short
 
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2.10.0
         with:
           context: ./
-          platforms: linux/amd64
-          push: ${{ github.event_name == 'release' }}
+          platforms: linux/amd64,linux/arm64/v8,linux/arm/v7,linux/arm/v6,linux/ppc64le,linux/s390x
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.img_meta.outputs.tags }}
           labels: ${{ steps.img_meta.outputs.labels }}
           cache-from: type=gha,mode=max
           cache-to: type=gha,mode=max
 
-      - name: Update repo description
-        continue-on-error: true
+      - name: Update Docker repo description
         if: ${{ github.event_name == 'release' }}
         uses: peter-evans/dockerhub-description@v3.0.0
         with:
