@@ -3,7 +3,6 @@
 **Bot ini dibuat agar kita tidak batal puasa hanya karena tidak sengaja membuka channel nsfw Discord**
 
 <a href='https://discord.com/api/oauth2/authorize?client_id=954016653836943431&permissions=412585610320&scope=bot%20applications.commands'><img src="https://img.shields.io/static/v1?label=Invite%20Me&message=Pak+Ustadz%239319&plastic&color=7289DA&logo=discord"></a>
-<a href='https://github.com/Hazmi35/pak-ustadz/actions?query=workflow%3A%22Lint+code+%26+compile+test%22'><img src='https://github.com/Hazmi35/jukebox/workflows/Lint%20code%20&%20compile%20test/badge.svg' alt='CI Status' /></a>
 <img src="https://badgen.net/badge/icon/typescript?icon=typescript&label">
 
 ## Cara menggunakan
