@@ -40,7 +40,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate Docker image metadata
-        uses: docker/metadata-action@v5.5.0
+        uses: docker/metadata-action@v5.5.1
         id: img_meta
         with:
           flavor: |
