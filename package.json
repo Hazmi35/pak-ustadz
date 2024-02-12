@@ -27,7 +27,7 @@
     "tslib": "^2.6.2"
   },
   "devDependencies": {
-    "@hazmi35/eslint-config": "^13.2.4",
+    "@hazmi35/eslint-config": "^13.3.1",
     "@tsconfig/node-lts": "^20.1.1",
     "@types/better-sqlite3": "^7.6.9",
     "@types/luxon": "^3.4.2",
