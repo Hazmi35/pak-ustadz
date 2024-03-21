@@ -58,8 +58,8 @@ devDependencies:
     specifier: ^3.4.2
     version: 3.4.2
   discord-api-types:
-    specifier: ^0.37.67
-    version: 0.37.67
+    specifier: ^0.37.76
+    version: 0.37.76
   drizzle-kit:
     specifier: ^0.20.13
     version: 0.20.13
@@ -1464,8 +1464,8 @@ packages:
     resolution: {integrity: sha512-o/dXNFfhBpYHpQFdT6FWzeO7pKc838QeeZ9d91CfVAtpr5XLK4B/zYxQbYgPdoMiTDvJfzcsLW5naXgmHGDNXw==}
     dev: false
 
-  /discord-api-types@0.37.67:
-    resolution: {integrity: sha512-4HEzUEmwGPXWJdVhGZ/K+9eWs8kurdn5r/I8qD3/0hb14I0MZvx8K/JOyLhKLgcR4/8/jcr6Xej820BNgNXN7A==}
+  /discord-api-types@0.37.76:
+    resolution: {integrity: sha512-GQI02JvBVl9+WQiMmyc/OFuJ4bBBf2VWb6NjPBnzrrdF2D/2S07mA1ZCd5+IhHRjU8wQ83c/hmjj9nn1+r/K9g==}
     dev: true
 
   /discord.js@14.14.1(bufferutil@4.0.8)(utf-8-validate@6.0.3):
