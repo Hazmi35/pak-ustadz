@@ -49,8 +49,8 @@ devDependencies:
     specifier: ^13.2.4
     version: 13.2.4(@eslint/eslintrc@3.0.0)(@stylistic/eslint-plugin@1.5.4)(@typescript-eslint/eslint-plugin@6.19.1)(@typescript-eslint/parser@6.19.1)(eslint-config-prettier@9.1.0)(eslint-import-resolver-typescript@3.6.1)(eslint-plugin-import@2.29.1)(eslint-plugin-jsdoc@48.0.4)(eslint-plugin-n@16.6.2)(eslint-plugin-promise@6.1.1)(eslint-plugin-tsdoc@0.2.17)(eslint-plugin-unicorn@50.0.1)(eslint@8.56.0)(typescript@5.3.3)
   '@tsconfig/node-lts':
-    specifier: ^20.1.1
-    version: 20.1.1
+    specifier: ^20.1.2
+    version: 20.1.2
   '@types/better-sqlite3':
     specifier: ^7.6.9
     version: 7.6.9
@@ -829,8 +829,8 @@ packages:
       - typescript
     dev: true
 
-  /@tsconfig/node-lts@20.1.1:
-    resolution: {integrity: sha512-V7wHydi1dv8I8xiOX3pJ0lhC+MlOakznvLks94J6y/TqQK6DBcbdD1G4jEq8yU+s6lBASPn4e1Ci636fDqeyvQ==}
+  /@tsconfig/node-lts@20.1.2:
+    resolution: {integrity: sha512-ac1p25SlBvxIG7WInTKMcIOpk+jzXcaOuhCiE4Ddq38RAvp0uWCugTedUHN4sobVTMbIKALbBI+ucGrQmPoeiA==}
     dev: true
 
   /@types/better-sqlite3@7.6.9:
