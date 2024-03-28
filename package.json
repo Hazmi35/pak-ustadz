@@ -31,7 +31,7 @@
     "@tsconfig/node-lts": "^20.1.1",
     "@types/better-sqlite3": "^7.6.9",
     "@types/luxon": "^3.4.2",
-    "discord-api-types": "^0.37.67",
+    "discord-api-types": "^0.37.77",
     "drizzle-kit": "^0.20.13",
     "typescript": "^5.3.3"
   },
