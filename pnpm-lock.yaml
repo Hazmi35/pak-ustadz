@@ -15,8 +15,8 @@ dependencies:
     specifier: ^14.14.1
     version: 14.14.1(bufferutil@4.0.8)(utf-8-validate@6.0.3)
   drizzle-orm:
-    specifier: ^0.29.3
-    version: 0.29.3(@types/better-sqlite3@7.6.9)(better-sqlite3@9.3.0)
+    specifier: ^0.31.0
+    version: 0.31.0(@types/better-sqlite3@7.6.9)(better-sqlite3@9.3.0)
   luxon:
     specifier: ^3.4.4
     version: 3.4.4
@@ -1534,20 +1534,23 @@ packages:
       - supports-color
     dev: true
 
-  /drizzle-orm@0.29.3(@types/better-sqlite3@7.6.9)(better-sqlite3@9.3.0):
-    resolution: {integrity: sha512-uSE027csliGSGYD0pqtM+SAQATMREb3eSM/U8s6r+Y0RFwTKwftnwwSkqx3oS65UBgqDOM0gMTl5UGNpt6lW0A==}
+  /drizzle-orm@0.31.0(@types/better-sqlite3@7.6.9)(better-sqlite3@9.3.0):
+    resolution: {integrity: sha512-Uf5a3sGOqoyC+ZpQ4NCPR373q0pHOHezIJwdumMix+3rzLdtKgRhdaOabYeqNHBB48gF3Q9rrndkNc4ddE3AWA==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=3'
+      '@electric-sql/pglite': '>=0.1.1'
       '@libsql/client': '*'
       '@neondatabase/serverless': '>=0.1'
+      '@op-engineering/op-sqlite': '>=2'
       '@opentelemetry/api': ^1.4.1
       '@planetscale/database': '>=1'
       '@types/better-sqlite3': '*'
       '@types/pg': '*'
       '@types/react': '>=18'
       '@types/sql.js': '*'
-      '@vercel/postgres': '*'
+      '@vercel/postgres': '>=0.8.0'
+      '@xata.io/client': '*'
       better-sqlite3: '>=7'
       bun-types: '*'
       expo-sqlite: '>=13.2.0'
@@ -1564,9 +1567,13 @@ packages:
         optional: true
       '@cloudflare/workers-types':
         optional: true
+      '@electric-sql/pglite':
+        optional: true
       '@libsql/client':
         optional: true
       '@neondatabase/serverless':
+        optional: true
+      '@op-engineering/op-sqlite':
         optional: true
       '@opentelemetry/api':
         optional: true
@@ -1581,6 +1588,8 @@ packages:
       '@types/sql.js':
         optional: true
       '@vercel/postgres':
+        optional: true
+      '@xata.io/client':
         optional: true
       better-sqlite3:
         optional: true
@@ -2323,6 +2332,7 @@ packages:
 
   /glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
+    deprecated: Glob versions prior to v9 are no longer supported
     dependencies:
       fs.realpath: 1.0.0
       inflight: 1.0.6
@@ -3262,6 +3272,7 @@ packages:
 
   /rimraf@3.0.2:
     resolution: {integrity: sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==}
+    deprecated: Rimraf versions prior to v4 are no longer supported
     hasBin: true
     dependencies:
       glob: 7.2.3
